@@ -1,0 +1,89 @@
+/* Estilo para el fondo con degradado horizontal */
+.header-nav{
+    background: linear-gradient(to right, #6656cc, #9b53c6,#b851c2);
+    /* Otros estilos para el cuerpo de la página */
+    font-family: Arial, sans-serif;
+    color: white; /* Ajusta el color del texto para que sea legible en el fondo */
+    text-align: center; /* Alineación del contenido al centro */
+    padding: 20px; /* Espaciado interior para mejorar la legibilidad */
+  }
+  
+
+/* Estilo para el formulario */
+form {
+    display:flex;
+    flex-direction: column;
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+ 
+  /* Estilo para los campos de entrada de texto */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+  .form-r{
+    flex-direction: row;
+  } 
+  input[type="text"], input[type="file"] {
+    width: 85%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  /* Estilo para el botón de envío */
+  input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  /* Estilo para etiquetas */
+  label {
+    font-weight: bold;
+  }
+
+  .form-item{
+    margin: 5px;
+  }
+  
+  /* Estilo para el formulario en general */
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+  }
+  
+  /* Estilo para errores de validación (puedes usar esto si deseas agregar validaciones personalizadas) */
+  .error {
+    color: red;
+    font-size: 12px;
+  }
+  
+@media screen and (max-width: 768px) {
+   .form-r{
+    flex-direction: column;
+   }
+    /* Otros estilos específicos para tabletas */
+}
+
+.volver-btn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 10px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
