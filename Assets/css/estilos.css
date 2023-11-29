@@ -25,7 +25,7 @@ form {
   .form-group {
     display: flex;
     flex-direction: column;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     padding: 10px;
   }
   .form-r{
@@ -86,4 +86,10 @@ form {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+form button {
+  
+  display: block;
+  margin-bottom: 100px; /* Puedes ajustar el valor según sea necesario */
 }

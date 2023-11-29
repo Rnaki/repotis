@@ -31,17 +31,23 @@
   <form action="/MVC/View/registrarNfc.html" method="post">
         <!-- Your form fields go here -->
         <label for="rutUsuario">Rut:</label>
-        <input type="text" id="rutUsuario" name="username">
+        <input type="text" id="rutUsuario" name="rutUsuario">
         <label for="nombreUsuario">Nombre:</label>
         <input type="text" id="nombreUsuario" name="nombreUsuario">
         <label for="apellidoUsuario">Apellido:</label>
         <input type="text" id="apellidoUsuario" name="apellidoUsuario">
         <label for="passwordUsuario">Password:</label>
-        <input type="text" id="passwordUsuario" name="passwordUsuario">
+        <input type="password" id="passwordUsuario" name="passwordUsuario">
+        <label for="confirmacionPasswordUsuario">Confirmación Password:</label>
+        <input type="password" id="confirmacionPasswordUsuario" name="passwordUsuario">
         <br>
-    <button type="submit" class="btn btn-dark">SIGUIENTE</button>
-  </form>
+        <br>
+        <br>
+        <br>
+        <button type="button" class="btn btn-dark" onclick="Administrador.registrarDatos()">SIGUIENTE</button>
+    </form>
   </div>
+  <script src="../Controller/Js/registrarDatos.js"></script>
 </body>
 </html>
      
