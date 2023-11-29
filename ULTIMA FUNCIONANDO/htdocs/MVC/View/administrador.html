@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-  
   <!--===============================================================================================-->	
 	<link rel="icon" type="image/png" href="../../Assets/images/icons/favicon.ico"/>
   <!--===============================================================================================-->
@@ -27,29 +26,14 @@
     <header class="header-nav">
         <h1>AUTH</h1>
     </header>
-    <div class="container mt-4">
-      <form action="../Controller/js/registrarDatos.html" method="post">
-        <button type="submit" class="btn btn-dark">REGISTRAR</button>
-      </form>
-      <table class="table table-bordered">
-        <thead class="thead-light">
-            <tr>
-                <th>RUT</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Password</th>
-                <th>Código NFC</th>
-                <th>Update</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
-        <tbody id="cuerpoTabla">
-            <!-- Aquí se agregarán las filas de la tabla mediante JavaScript -->
-        </tbody>
-    </table>
+  <form action="/MVC/View/registrarDatos.html" method="post">
+    <button type="submit" class="btn btn-dark">REGISTRAR</button>
+  </form>
+  <div class="container">
+    <div class="listaUsuario">
+      <h1>aquí va la lista</h1>
+    </div>
   </div>
-  <script src="../../Assets/vendor/jquery/jquery-3.2.1.min.js"></script>
-  <script src="../../MVC/Controller/Js/registrarDatos.js"></script>
 </body>
 </html>
      

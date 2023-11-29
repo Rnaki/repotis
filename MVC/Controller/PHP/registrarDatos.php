@@ -12,10 +12,9 @@
 // Tu lógica de la capa Model va aquí
 class Administrador {
     private $tempData = []; // Almacena temporalmente los datos
- 
     public function verDatos($data) {
         // Lógica para obtener la sentencia SQL desde el archivo (puedes definir una función específica para esto)
-        $sql = obtenerSentenciaSQL(); // Ajusta esto según tu implementación
+        
 
         // Prepara la sentencia SQL
         $conexion = establishConnection();
@@ -23,18 +22,35 @@ class Administrador {
 // Asegúrate de que $conexion sea una instancia válida de PDO antes de continuar
         if ($conexion instanceof PDO) {
             // Tu lógica aquí
-            $stmt = $conexion->prepare($sql);
-
-            if ($stmt) {
+            
                 // Asigna los valores y ejecuta la sentencia
                 // Puedes ajustar esto según tu implementación y los datos proporcionados en $data
                 $valor1 = $data['pagina_actual']; // Ajusta según tu implementación
-                $stmt->bindParam(':pagina_actual', $valor1, PDO::PARAM_STR);
+                $sql = obtenerSentenciaSQL($valor1); // Ajusta esto según tu implementación
+                $stmt = $conexion->prepare($sql);
+                if ($stmt) {
+                $stmt->bindParam(':pagina_actual', $valor1, PDO::PARAM_INT);
                 
                 $stmt->execute();
+                $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $this->datos = [];
+
+                foreach ($resultados as $fila) {
+                    // Agrega cada fila al array $this->datos
+                    $this->datos[] = [
+                        'rut_usuario' => $fila['rut_usuario'],
+                        'nombre_usuario' => $fila['nombre_usuario'],
+                        'apellido_usuario' => $fila['apellido_usuario'],
+                        'password_usuario' => $fila['password_usuario'],
+                        'codigo_nfc_usuario' => $fila['codigo_nfc_usuario'],
+                    ];
+                }
+                $jsonString = json_encode($this->datos);
+                echo($jsonString); // O utiliza 'echo' si estás en un entorno web
+                return $jsonString;     
+                // Retorna el JSON después del bucle
+                //return json_encode($this->datos);
                 // Envia la respuesta al cliente
-                $response = ['status' => 'success', 'message' => 'Registro exitoso'];
-                echo json_encode($response);
             } else {
                 // Manejo de error si prepare no fue exitoso
                 $response = ['status' => 'error', 'message' => 'Error en la preparación de la sentencia'];

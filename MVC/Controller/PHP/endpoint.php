@@ -27,13 +27,13 @@ class NFCProcessor {
         $postData = file_get_contents('php://input');
         $decodedData = json_decode($postData, true);
         // ...
-        if ($decodedData["nfc"] !== null && $decodedData["rf"] == null) {
+        if ($decodedData["nfc"] !== null) {
+            echo $decodedData["nfc"];
             //$this->processNFCData($decodedData["nfc"]);
             echo "logrado";  // Añade un mensaje para verificar si llega a este punto
-        } elseif ($decodedData["rf"] == true && $decodedData["nfc"] == null) {
-            echo "Welcome to the system";
-        } elseif ($decodedData["rf"] == false && $decodedData["nfc"] == null) {
-            echo "U cannot Pass";
+            if ($decodedData["rf"] == true){
+                echo "Welcome to de the system";
+            }
         } else {
             $this->respondError('Datos inválidos');
         }

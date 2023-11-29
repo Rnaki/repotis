@@ -14,6 +14,7 @@ class Administrador {
         this.paginaActual = 1; // Puedes inicializar con la página que desees
     }
 
+
     verDatos() {
         var self = this;
         var valor = {
@@ -30,16 +31,27 @@ class Administrador {
         })
         .then(response => response.json())
         .then(data => {
-            if (self.target) {
-                self.target.innerHTML = data;
-            } else {
-                console.error('Elemento target no encontrado');
-            }
+            crearTabla(data);
+            // Iterar sobre las filas en el array
+            data.forEach(fila => {
+                console.log(`ID: ${fila.rut_usuario}, Nombre: ${fila.nombre_usuario}`);
+                // Realiza acciones con cada fila según sea necesario
+            });
         })
+        // .then(response => response.json())
+        // .then(data => {
+        //     if (self.target) {
+        //         self.target.innerHTML = data;
+        //     } else {
+        //         console.error('Elemento target no encontrado');
+        //     }
+        // })
         .catch(error => {
             console.error('Disculpe, existió un problema:', error);
         });
+
     }
+
 
     registrarDatos() {
         // Your method code here
@@ -87,4 +99,46 @@ class Administrador {
             console.error('Error:', error);
         });
     }
+}
+
+function crearTabla(datos) {
+    // Obtener la referencia al cuerpo de la tabla
+    var cuerpoTabla = document.getElementById('cuerpoTabla');
+
+    // Iterar sobre los datos y crear filas para la tabla
+    datos.forEach(fila => {
+        // Crear una nueva fila
+        var nuevaFila = cuerpoTabla.insertRow();
+
+        // Iterar sobre las propiedades de cada objeto (columnas)
+        for (var prop in fila) {
+            // Crear una celda en la fila para cada propiedad
+            var nuevaCelda = nuevaFila.insertCell();
+            nuevaCelda.textContent = fila[prop];
+        }
+
+        // Agregar una celda con un botón y asociar el RUT del usuario
+        var nuevaCeldaBoton = nuevaFila.insertCell();
+        var boton = document.createElement('button');
+        boton.textContent = 'Ver Detalles';
+        boton.className = 'btn btn-primary';
+        // Asociar el RUT del usuario al botón (puedes usar un atributo personalizado)
+        boton.dataset.rutUsuario = fila.rut_usuario;
+        boton.addEventListener('click', function () {
+            // Acción al hacer clic en el botón
+            alert('RUT del usuario: ' + this.dataset.rutUsuario);
+        });
+        nuevaCeldaBoton.appendChild(boton);
+        var nuevaCeldaBoton2 = nuevaFila.insertCell();
+        var boton2 = document.createElement('button');
+        boton2.textContent = 'Botón 2';
+        boton2.className = 'btn btn-secondary';
+        // Asociar el RUT del usuario al botón (puedes usar un atributo personalizado)
+        boton2.dataset.rutUsuario = fila.rut_usuario;
+        boton2.addEventListener('click', function () {
+            // Acción al hacer clic en el botón 2
+            alert('Hiciste clic en el Botón 2 para el usuario con RUT: ' + this.dataset.rutUsuario);
+        });
+        nuevaCeldaBoton2.appendChild(boton2);
+    });
 }

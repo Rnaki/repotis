@@ -1,11 +1,9 @@
-// sql.php
 <?php
-
 // Ajusta la ruta según la ubicación de tu archivo
 
-function obtenerSentenciaSQL() {
+function obtenerSentenciaSQL($pagina_actual) {
     try {
-        $sqlSelect = "SELECT * FROM Trabajador";
+        $sqlSelect = "SELECT * FROM Usuario LIMIT 10 OFFSET :pagina_actual";
         return $sqlSelect;
     } catch (Exception $e) {
         // Manejar cualquier error que pueda ocurrir al leer el archivo
