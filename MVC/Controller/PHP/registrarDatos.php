@@ -25,11 +25,14 @@ class Administrador {
             
                 // Asigna los valores y ejecuta la sentencia
                 // Puedes ajustar esto según tu implementación y los datos proporcionados en $data
-                $valor1 = $data['pagina_actual']; // Ajusta según tu implementación
-                $sql = obtenerSentenciaSQL($valor1); // Ajusta esto según tu implementación
+                $filas = 10;
+                $pagina_actual = $data['pagina_actual']; // Ajusta según tu implementación
+                $datos_pagina = ($pagina_actual - 1)*$filas;
+                $sql = obtenerSentenciaSQL(); // Ajusta esto según tu implementación
                 $stmt = $conexion->prepare($sql);
                 if ($stmt) {
-                $stmt->bindParam(':pagina_actual', $valor1, PDO::PARAM_INT);
+                $stmt->bindParam(':filas', $filas, PDO::PARAM_INT);
+                $stmt->bindParam(':datos_pagina', $datos_pagina, PDO::PARAM_INT);
                 
                 $stmt->execute();
                 $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -59,7 +62,30 @@ class Administrador {
     }
     }
     
+    public function borrarUsuario($data) {
+        $sql = borrarUsuarioSQL();
+        $conexion = establishConnection();
+        
+        $stmt = $conexion->prepare($sql);
     
+        if ($stmt) {
+            $rut_usuario = $data["rut_usuario"];
+    
+            // Vincula el parámetro correctamente
+            $stmt->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
+    
+            try {
+                $stmt->execute();
+                $response = ['status' => 'success', 'message' => 'Registro exitoso'];
+                echo json_encode($response);
+
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+            }
+        }
+    }
+
+
     public function procesarRegistroDatos($data) {
             // Procesar los datos recibidos desde JavaScript
             // Puedes acceder a los datos como $data['rutUsuario'], $data['nombreUsuario'], etc.
@@ -97,7 +123,11 @@ class Administrador {
         if($data["funcion"] == "verDatos"){
             $Administrador->verDatos($data);
         }elseif($data["funcion"] == "registrarDatos"){
-        $Adminstrador->procesarRegistroDatos($data);
+        $Administrador->procesarRegistroDatos($data);
+        }elseif($data["funcion"] == "borrarUsuario"){
+            $Administrador->borrarUsuario($data);
+        }elseif($data["funcion"] == "lecturaNfc"){
+            $Administrador->leerNfc($data);
         }
     } else {
         // Devolver una respuesta de error si los datos no son válidos

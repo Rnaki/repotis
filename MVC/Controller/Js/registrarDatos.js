@@ -99,11 +99,46 @@ class Administrador {
             console.error('Error:', error);
         });
     }
+    borrarUsuario(rut_usuario){
+        const formData ={
+            funcion: "borrarUsuario",
+            rut_usuario : rut_usuario
+        }
+        console.log(formData);
+        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            console.log(response); // Agrega esta línea para ver la respuesta completa
+            return response.json();
+        })
+        .then(data => {
+            // Handle the response from the server if needed
+            if (data.status === 'success') {
+                this.verDatos();
+                console.log(data);
+                // No necesitas iterar sobre data aquí
+            } else {
+                // Manejar otros casos (puedes agregar lógica adicional aquí)
+                console.error('Error en el servidor:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
 }
 
 function crearTabla(datos) {
     // Obtener la referencia al cuerpo de la tabla
     var cuerpoTabla = document.getElementById('cuerpoTabla');
+
+    // Limpiar el cuerpo de la tabla antes de agregar nuevas filas
+    cuerpoTabla.innerHTML = '';
 
     // Iterar sobre los datos y crear filas para la tabla
     datos.forEach(fila => {
@@ -129,16 +164,19 @@ function crearTabla(datos) {
             alert('RUT del usuario: ' + this.dataset.rutUsuario);
         });
         nuevaCeldaBoton.appendChild(boton);
-        var nuevaCeldaBoton2 = nuevaFila.insertCell();
-        var boton2 = document.createElement('button');
-        boton2.textContent = 'Botón 2';
-        boton2.className = 'btn btn-secondary';
+
+        var nuevaCeldaBorrar = nuevaFila.insertCell();
+        var Borrar = document.createElement('button');
+        Borrar.textContent = 'Borrar';
+        Borrar.className = 'btn btn-danger';
         // Asociar el RUT del usuario al botón (puedes usar un atributo personalizado)
-        boton2.dataset.rutUsuario = fila.rut_usuario;
-        boton2.addEventListener('click', function () {
+        var rut_usuario = fila.rut_usuario;
+        Borrar.addEventListener('click', function () {
             // Acción al hacer clic en el botón 2
-            alert('Hiciste clic en el Botón 2 para el usuario con RUT: ' + this.dataset.rutUsuario);
+            event.preventDefault();
+            var objBorrarUsuario = new Administrador();
+            objBorrarUsuario.borrarUsuario(rut_usuario);
         });
-        nuevaCeldaBoton2.appendChild(boton2);
+        nuevaCeldaBorrar.appendChild(Borrar);
     });
 }
