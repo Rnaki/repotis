@@ -16,9 +16,11 @@ function buscarNfc($nfc) {
     try {
         $sqlSelect = "SELECT
         CASE
-            WHEN EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) AND cl.crearUsuario = 0 THEN 'Logear'
-            WHEN EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) AND cl.crearUsuario = 1 THEN 'Logear'
-            WHEN NOT EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) AND cl.crearUsuario = 1 THEN 'Crear'
+            WHEN cl.crearUsuario = 0 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) THEN 'Logear'
+            WHEN cl.crearUsuario = 1 AND :nfc IN (SELECT nfc_administrador FROM administrador) THEN 
+                CONCAT('Create ', :nfc) -- Retorna 'Create' seguido del valor de :nfc
+            WHEN cl.crearUsuario = 1 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) THEN 'Logear'
+            WHEN cl.crearUsuario = 1 AND NOT EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc) THEN 'False'
             ELSE 'False'
         END AS resultado
     FROM
@@ -41,5 +43,29 @@ function borrarUsuarioSQL() {
         die('Error al obtener la sentencia SQL: ' . $e->getMessage());
     }
 }
+
+function activarModoCreate() {
+    try {
+        $sqlDelete = "UPDATE controladorLogin SET crearUsuario = TRUE";
+        return $sqlDelete;
+    } catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+}
+
+function registrarNFC(){
+    try {
+        $registrarNFC = "INSERT INTO USUARIO (codigo_nfc_usuario) VALUES (:nfc_codigo_usuario)";
+        return $registrarNFC;
+    } catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+}
+
+
 
 ?>

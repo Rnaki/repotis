@@ -64,7 +64,6 @@ class Administrador {
     
     public function borrarUsuario($data) {
         $sql = borrarUsuarioSQL();
-        $conexion = establishConnection();
         
         $stmt = $conexion->prepare($sql);
     
@@ -91,13 +90,26 @@ class Administrador {
             // Puedes acceder a los datos como $data['rutUsuario'], $data['nombreUsuario'], etc.
             $this->tempData[] = $data;
             // Aquí deberías tener lógica para interactuar con la base de datos, validar datos, etc.
-            
+            $sql = activarModoCreate();
+            $conexion = establishConnection();
+        
+            $stmt = $conexion->prepare($sql);
+            try {
+                $stmt->execute();
+                $response = ['status' => 'success', 'message' => 'Registro exitoso'];
+                $this->tempData['status'] = 'success';
+                echo json_encode($this->tempData);
+
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+            }
+
             // Ejemplo: Guardar en la base de datos
             // $this->guardarEnBaseDeDatos($data);
     
             // Devolver una respuesta (puedes ajustar según tus necesidades)
             $response = ['status' => 'success', 'message' => 'Registro exitoso'];
-            echo json_encode($response);
+            //echo json_encode($response);
         }
     public function procesarRegistroNfc() {
             // Aquí deberías preparar y ejecutar la sentencia SQL para insertar los datos en la base de datos
