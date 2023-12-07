@@ -55,7 +55,6 @@ class Administrador {
             rutAdministrador: rutAdministrador,
             passwordAdministrador: passwordAdministrador
         };
-        console.log(formData);
         //Envia Datos
         fetch('/MVC/Controller/PHP/registrarDatos.php', {
             method: 'POST',
@@ -68,33 +67,50 @@ class Administrador {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            if (data.status === 'success') {
-                window.location.href = '/MVC/View/administrador.html';
+            if (data === 1) {
+                // El rut y contraseña coinciden, redirige a la página correspondiente
+                // Almacena el rut en una variable de sesión
+                fetch('/MVC/Controller/PHP/guardarRutEnSesion.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ rut: rutAdministrador })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        window.location.href = '/MVC/View/administrador.html';
+                    } else {
+                        console.error('Error al guardar el rut en sesión:', result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            } else if (data === 0) {
+                console.log("rut y password no coinciden");
             } else {
                 console.error('Error en el servidor:', data.message);
             }
         })
-        //Respuesta en caso de Error
-        .catch(error => {
-            console.error('Error:', error);
-        });
     }
 
     registrarDatos() {
         // Prepara Datos
-        const rut = document.getElementById('rutUsuario').value;
-        const nombre = document.getElementById('nombreUsuario').value;
-        const apellido = document.getElementById('apellidoUsuario').value;
-        const password = document.getElementById('passwordUsuario').value;
-        const confirmacionPasswordUsuario = document.getElementById('confirmacionPasswordUsuario').value;
+        const rut_usuario = document.getElementById('rutUsuario').value;
+        const nombre_usuario = document.getElementById('nombreUsuario').value;
+        const apellido_usuario = document.getElementById('apellidoUsuario').value;
+        const password_usuario = document.getElementById('passwordUsuario').value;
+        const confirmacion_password_usuario = document.getElementById('confirmacionPasswordUsuario').value;
 
         const formData = {
             funcion: "registrarDatos",
-            rutUsuario: rut,
-            nombreUsuario: nombre,
-            apellidoUsuario: apellido,
-            passwordUsuario: password,
-            confirmacionPasswordUsuario: confirmacionPasswordUsuario
+            rut_usuario: rut_usuario,
+            nombre_usuario: nombre_usuario,
+            apellido_usuario: apellido_usuario,
+            password_usuario: password_usuario,
+            confirmacion_password_usuario: confirmacion_password_usuario
         };
         console.log(formData);
         // Envia Datos
@@ -109,9 +125,9 @@ class Administrador {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            if (data.status === 'success') {
+            if (data === 1) {
                 // Redirigir a la página deseada
-                window.location.href = '/MVC/View/registrarNfc.html';
+                window.location.href = '/MVC/View/administrador.html';
             } else {
                 // Manejar otros casos (puedes agregar lógica adicional aquí)
                 console.error('Error en el servidor:', data.message);

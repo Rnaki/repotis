@@ -46,6 +46,21 @@ class Administrador {
     }
     //Funcion de login del Administrador
     public function loginAdministrador($data){
+        $sql = loginAdministrador();
+        $conexion = establishConnection();
+        $stmt = $conexion->prepare($sql);
+        $rutAdministrador = $data["rutAdministrador"];
+        $passwordAdministrador = $data["passwordAdministrador"];
+        try {
+            $stmt->bindParam(':rutAdministrador', $rutAdministrador, PDO::PARAM_STR);
+            $stmt->bindParam(':passwordAdministrador', $passwordAdministrador, PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            // Imprime el resultado
+            echo $result['resultado'];
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
 
     }
     //funcion que elimina el usuario seteando el valor de la columna en 0
@@ -67,14 +82,24 @@ class Administrador {
 
     public function procesarRegistroDatos($data) {
             $this->tempData[] = $data;
-            $sql = activarModoCreate();
+            $sql = registrarDatos();
             $conexion = establishConnection();
             $stmt = $conexion->prepare($sql);
+            $rut_usuario = $data["rut_usuario"];
+            $nombre_usuario = $data["nombre_usuario"];
+            $apellido_usuario = $data["apellido_usuario"];
+            $password_usuario = $data["password_usuario"];
+            $confirmacion_password_usuario = $data["confirmacion_password_usuario"];
             try {
-                $stmt->execute();
-                $response = ['status' => 'success', 'message' => 'Registro exitoso'];
-                $this->tempData['status'] = 'success';
-                echo json_encode($this->tempData);
+                $stmt->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
+                $stmt->bindParam(':nombre_usuario', $nombre_usuario, PDO::PARAM_STR);
+                $stmt->bindParam(':apellido_usuario', $apellido_usuario, PDO::PARAM_STR);
+                $stmt->bindParam(':password_usuario', $password_usuario, PDO::PARAM_STR);
+                $stmt->bindParam(':confirmacion_password_usuario', $confirmacion_password_usuario, PDO::PARAM_STR);
+                $result = $stmt->execute();
+
+               
+                echo $result;
             } catch (PDOException $e) {
                 echo "Error: " . $e->getMessage();
             }
@@ -89,6 +114,10 @@ class Administrador {
 
     //Funcion que prepara el ingreso de la nfc según el usuario seleccionado//
     public function preparaNFC($data){
+        session_start(); // Inicia la sesión
+
+        // Accede a la variable de sesión
+        $rut_administrador = isset($_SESSION['rut']) ? $_SESSION['rut'] : null;
 
         $rut_usuario = $data["rut_usuario"];
         $sql = preparaNFC();
@@ -96,6 +125,7 @@ class Administrador {
         $stmt = $conexion->prepare($sql);
         try {
             $stmt->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
+            $stmt->bindParam(':rut_administrador', $rut_administrador, PDO::PARAM_STR);
             $resultado =$stmt->execute();
             echo json_encode($resultado);
         } catch (PDOException $e) {

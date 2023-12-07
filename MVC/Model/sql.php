@@ -44,6 +44,29 @@ function borrarUsuarioSQL() {
     }
 }
 
+function registrarDatos(){
+    try {
+        $registrarDatos = "INSERT into Usuario (rut_usuario,
+                                                nombre_usuario,
+                                                apellido_usuario,
+                                                password_usuario,
+                                                confirmacion_password_usuario,
+                                                eliminado)
+                                                VALUES (:rut_usuario,
+                                                        :nombre_usuario,
+                                                        :apellido_usuario,
+                                                        :password_usuario,
+                                                        :confirmacion_password_usuario,
+                                                        FALSE);";
+        return $registrarDatos;
+    } catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+
+}
+
 function activarModoCreate() {
     try {
         $sqlDelete = "UPDATE controladorLogin SET crearUsuario = TRUE";
@@ -68,8 +91,27 @@ function registrarNFC(){
 
 function preparaNFC(){
     try {
-        $preparaNFC = "UPDATE Usuario set prepara_nfc = true where rut_usuario = :rut_usuario";
+        $preparaNFC = "UPDATE Usuario set prepara_nfc = true,
+                                          rut_administrador = :rut_administrador
+                                          where rut_usuario = :rut_usuario";
         return $preparaNFC;
+    }catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+}
+
+function loginAdministrador(){
+    try {
+        $loginAdministrador = "SELECT 
+        CASE 
+          WHEN COUNT(*) > 0 THEN 1
+          ELSE 0
+        END as resultado
+      FROM administrador 
+      WHERE rut_administrador = :rutAdministrador AND password_administrador = :passwordAdministrador;or ";
+    return $loginAdministrador;
     }catch (Exception $e) {
         // Manejar cualquier error que pueda ocurrir al leer el archivo
         // Puedes ajustar el manejo de errores según tus necesidades
