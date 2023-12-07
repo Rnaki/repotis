@@ -66,6 +66,17 @@ function registrarNFC(){
     }
 }
 
+function preparaNFC(){
+    try {
+        $preparaNFC = "UPDATE Usuario set prepara_nfc = true where rut_usuario = :rut_usuario";
+        return $preparaNFC;
+    }catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+}
+
 
 
 ?>

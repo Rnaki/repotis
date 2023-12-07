@@ -31,15 +31,13 @@
 					</span>
 					<img class="center-block" src="../../Assets/images/img-01.png" alt="IMG">
 					<div class="wrap-input100 validate-input" data-validate = "Password is required">
-						<input class="input100" type="text" name="pass" placeholder="NFC">
+						<input id ="rutAdministrador" class="input100" type="text" name="pass" placeholder="Rut Administrador">
                         <br>
-                        <input class="input100" type="password" name="pass" placeholder="Reconocimiento Facial">
+                        <input id="passwordAdministrador" class="input100" type="password" name="pass" placeholder="Password Administrador">
 
 					</div>
 					<div class="container-login100-form-btn">
-						<button class="login100-form-btn" onclick="window.location.href='registro.php'">
-							Ingresar
-						</button>
+						<button type="button" class="btn btn-success btn-block" onclick="var admin = new Administrador(); admin.loginAdministrador()">Ingresar al Sistema</button>
 					</div>
 			</div>
 		</div>
@@ -64,6 +62,7 @@
 	</script>
 <!--===============================================================================================-->
 	<script src="../../Assets/js/main.js"></script>
+	<script src="../../MVC/Controller/Js/registrarDatos.js"></script>
 
 </body>
 </html>

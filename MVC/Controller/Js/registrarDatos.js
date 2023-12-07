@@ -16,12 +16,13 @@ class Administrador {
 
 
     verDatos() {
+        //prepara Datos
         var self = this;
         var valor = {
             funcion: "verDatos",
             pagina_actual: self.paginaActual
         };
-    
+        //Envio de datos
         fetch('../Controller/PHP/registrarDatos.php', {
             method: 'POST',
             headers: {
@@ -29,39 +30,64 @@ class Administrador {
             },
             body: JSON.stringify(valor)
         })
+        //Respuesta peticion
         .then(response => response.json())
         .then(data => {
             crearTabla(data);
             // Iterar sobre las filas en el array
             data.forEach(fila => {
-                console.log(`ID: ${fila.rut_usuario}, Nombre: ${fila.nombre_usuario}`);
-                // Realiza acciones con cada fila según sea necesario
+                console.log("Datos Cargados Exitosamente");
             });
         })
-        // .then(response => response.json())
-        // .then(data => {
-        //     if (self.target) {
-        //         self.target.innerHTML = data;
-        //     } else {
-        //         console.error('Elemento target no encontrado');
-        //     }
-        // })
+        //Respuesta en caso de error
         .catch(error => {
             console.error('Disculpe, existió un problema:', error);
         });
 
     }
 
+    loginAdministrador(){
+        //Prepara Datos
+        const rutAdministrador = document.getElementById('rutAdministrador').value;
+        const passwordAdministrador = document.getElementById('passwordAdministrador').value;
+        const formData = {
+            funcion: "loginAdministrador",
+            rutAdministrador: rutAdministrador,
+            passwordAdministrador: passwordAdministrador
+        };
+        console.log(formData);
+        //Envia Datos
+        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        //Recibe Respuesta
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.status === 'success') {
+                window.location.href = '/MVC/View/administrador.html';
+            } else {
+                console.error('Error en el servidor:', data.message);
+            }
+        })
+        //Respuesta en caso de Error
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
 
     registrarDatos() {
-        // Your method code here
+        // Prepara Datos
         const rut = document.getElementById('rutUsuario').value;
         const nombre = document.getElementById('nombreUsuario').value;
         const apellido = document.getElementById('apellidoUsuario').value;
         const password = document.getElementById('passwordUsuario').value;
         const confirmacionPasswordUsuario = document.getElementById('confirmacionPasswordUsuario').value;
 
-        // Create a JSON object with the form data
         const formData = {
             funcion: "registrarDatos",
             rutUsuario: rut,
@@ -70,12 +96,8 @@ class Administrador {
             passwordUsuario: password,
             confirmacionPasswordUsuario: confirmacionPasswordUsuario
         };
-
-        // Log the form data to the console (you can remove this in production)
         console.log(formData);
-
-        // Send the form data to a PHP script using AJAX
-        // Example using the Fetch API:
+        // Envia Datos
         fetch('/MVC/Controller/PHP/registrarDatos.php', {
             method: 'POST',
             headers: {
@@ -83,9 +105,9 @@ class Administrador {
             },
             body: JSON.stringify(formData)
         })
+        // Recibe Respuesta
         .then(response => response.json())
         .then(data => {
-            // Handle the response from the server if needed
             console.log(data);
             if (data.status === 'success') {
                 // Redirigir a la página deseada
@@ -95,16 +117,20 @@ class Administrador {
                 console.error('Error en el servidor:', data.message);
             }
         })
+        //Respuesta en caso de error
         .catch(error => {
             console.error('Error:', error);
         });
     }
+
     borrarUsuario(rut_usuario){
+        //Prepara datos
         const formData ={
             funcion: "borrarUsuario",
             rut_usuario : rut_usuario
         }
         console.log(formData);
+        //Envia Datos
         fetch('/MVC/Controller/PHP/registrarDatos.php', {
             method: 'POST',
             headers: {
@@ -112,6 +138,7 @@ class Administrador {
             },
             body: JSON.stringify(formData)
         })
+        //Recibe Datos
         .then(response => {
             console.log(response); // Agrega esta línea para ver la respuesta completa
             return response.json();
@@ -127,8 +154,42 @@ class Administrador {
                 console.error('Error en el servidor:', data.message);
             }
         })
+        //Respuesta en caso de error
         .catch(error => {
             console.error('Error:', error);
+        });
+    }
+
+    preparaNFC(rut_usuario){
+        //Prepara Datos
+        const formData ={
+            funcion: "preparaNFC",
+            rut_usuario : rut_usuario
+        }
+        console.log(formData);
+        //Envia Datos
+        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        //Recibe Respuesta
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server if needed
+            if (data === true) {
+                this.verDatos();
+                console.log(data); // Esto mostrará el valor de $resultado en el servidor
+            } else {
+                // Manejar otros casos (puedes agregar lógica adicional aquí)
+                console.error('Error en el servidor:', data.message);
+            }
+        })
+        //Respuesta en caso de error
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
         });
     }
 }
@@ -136,15 +197,12 @@ class Administrador {
 function crearTabla(datos) {
     // Obtener la referencia al cuerpo de la tabla
     var cuerpoTabla = document.getElementById('cuerpoTabla');
-
     // Limpiar el cuerpo de la tabla antes de agregar nuevas filas
     cuerpoTabla.innerHTML = '';
-
     // Iterar sobre los datos y crear filas para la tabla
     datos.forEach(fila => {
         // Crear una nueva fila
         var nuevaFila = cuerpoTabla.insertRow();
-
         // Iterar sobre las propiedades de cada objeto (columnas)
         for (var prop in fila) {
             // Crear una celda en la fila para cada propiedad
@@ -152,19 +210,22 @@ function crearTabla(datos) {
             nuevaCelda.textContent = fila[prop];
         }
 
-        // Agregar una celda con un botón y asociar el RUT del usuario
-        var nuevaCeldaBoton = nuevaFila.insertCell();
-        var boton = document.createElement('button');
-        boton.textContent = 'Ver Detalles';
-        boton.className = 'btn btn-primary';
+        //Boton 1
+        // Agregar una celda (preparar NFC) con un botón y asociar el RUT del usuario
+        var nuevaCeldapreparaNFC = nuevaFila.insertCell();
+        var preparaNFC = document.createElement('button');
+        preparaNFC.textContent = 'Preparar NFC';
+        preparaNFC.className = 'btn btn-primary';
         // Asociar el RUT del usuario al botón (puedes usar un atributo personalizado)
-        boton.dataset.rutUsuario = fila.rut_usuario;
-        boton.addEventListener('click', function () {
-            // Acción al hacer clic en el botón
-            alert('RUT del usuario: ' + this.dataset.rutUsuario);
+        preparaNFC.dataset.rutUsuario = fila.rut_usuario;
+        preparaNFC.addEventListener('click', function () {
+            var objpreparaNFC = new Administrador();
+            objpreparaNFC.preparaNFC(rut_usuario);
         });
-        nuevaCeldaBoton.appendChild(boton);
+        nuevaCeldapreparaNFC.appendChild(preparaNFC);
 
+        //BOTON 2
+        // Agregar una celda (Eliminar) con un botón y asociar el RUT del usuario
         var nuevaCeldaBorrar = nuevaFila.insertCell();
         var Borrar = document.createElement('button');
         Borrar.textContent = 'Borrar';
