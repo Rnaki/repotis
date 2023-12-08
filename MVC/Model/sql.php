@@ -91,9 +91,14 @@ function registrarNFC(){
 
 function preparaNFC(){
     try {
-        $preparaNFC = "UPDATE Usuario set prepara_nfc = true,
-                                          rut_administrador = :rut_administrador
-                                          where rut_usuario = :rut_usuario";
+        $preparaNFC = "UPDATE Usuario
+        SET 
+            prepara_nfc = CASE 
+                WHEN rut_usuario = :rut_usuario THEN 1
+                ELSE 0
+            END,
+            rut_administrador = COALESCE(:rut_administrador, rut_administrador)
+        WHERE rut_administrador = :rut_administrador OR rut_usuario = :rut_usuario;";
         return $preparaNFC;
     }catch (Exception $e) {
         // Manejar cualquier error que pueda ocurrir al leer el archivo
