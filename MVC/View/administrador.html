@@ -27,10 +27,25 @@
     <header class="header-nav">
         <h1>AUTH</h1>
     </header>
-    <div class="container mt-4">
-      <form action="../View/registrarDatos.html" method="post">
-        <button type="submit" class="btn btn-dark">REGISTRAR</button>
-      </form>
+        <!-- Agrega los tabs de Bootstrap -->
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" id="tabla1-tab" data-toggle="tab" href="#tabla1" onclick="var instanciaVerDatosUsuario = new Administrador();
+                instanciaVerDatosUsuario.verDatos();">Registros</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tabla2-tab" data-toggle="tab" href="#tabla2" onclick="verDatosE = new Administrador(); verDatosE.verDatosEliminados();">Eliminados</a>
+            </li>
+        </ul>
+
+        <!-- Contenido de los tabs -->
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="tabla1">
+                <!-- Contenido de la Tabla 1 -->
+                <form action="../View/registrarDatos.html" method="post">
+                    <button type="submit" class="btn btn-dark">REGISTRAR</button>
+                </form>
+                
       <table class="table table-bordered">
         <thead class="thead-light">
             <tr>
@@ -39,7 +54,8 @@
                 <th>Apellido</th>
                 <th>Password</th>
                 <th>Código NFC</th>
-                <th>Update</th>
+                <th>Agrega NFC</th>
+                <th>Modificar Datos</th>
                 <th>Delete</th>
             </tr>
         </thead>
@@ -47,9 +63,81 @@
             <!-- Aquí se agregarán las filas de la tabla mediante JavaScript -->
         </tbody>
     </table>
+            </div>
+            <div class="tab-pane fade" id="tabla2">
+              <!-- Contenido de la Tabla 2 -->
+              <table class="table table-bordered">
+                  <thead class="thead-light">
+                      <tr>
+                          <th>RUT</th>
+                          <th>Nombre</th>
+                          <th>Apellido</th>
+                          <th>Password</th>
+                          <th>Código NFC</th>
+                          <th>Recuperar Usuario</th>
+                      </tr>
+                  </thead>
+                  <tbody id="cuerpoTablaEliminados">
+                      <!-- Aquí se agregarán las filas de la tabla mediante JavaScript -->
+                  </tbody>
+              </table>
+          </div>
+          
+        </div>
+    </div>
+
+
+
+<!-- Modal -->
+<div class="modal" id="modalUpdateDatos" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Mensaje del Servidor</h5>
+          </div>
+          <div class="modal-body">
+            <label for="modalRutUsuario">Rut:</label>
+            <input type="text" id="modalRutUsuario" class="form-control" disabled>
+            <br>
+            <label for="modalNombreUsuario">Nombre:</label>
+            <input type="text" id="modalNombreUsuario" class="form-control">
+            <br>
+            <label for="modalApellidoUsuario">Apellido:</label>
+            <input type="text" id="modalApellidoUsuario" class="form-control">
+            <br>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-primary" onclick="var admin = new Administrador(); admin.UpdateDatos()">Actualizar Datos</button>
+          </div>
+      </div>
   </div>
-  <script src="../../Assets/vendor/jquery/jquery-3.2.1.min.js"></script>
-  <script src="../../MVC/Controller/Js/registrarDatos.js"></script>
+</div>
 </body>
+<script src="../../Assets/vendor/jquery/jquery-3.2.1.min.js"></script>
+<script src="../../MVC/Controller/Js/registrarDatos.js"></script>
+<script>
+  // Agrega un evento de clic a los tabs para cambiar la visibilidad de las tablas
+  document.getElementById('tabla1-tab').addEventListener('click', function () {
+      document.getElementById('tabla1').classList.add('show', 'active');
+      document.getElementById('tabla2').classList.remove('show', 'active');
+  });
+
+  document.getElementById('tabla2-tab').addEventListener('click', function () {
+      document.getElementById('tabla1').classList.remove('show', 'active');
+      document.getElementById('tabla2').classList.add('show', 'active');
+  });
+</script>
+
+<!--===============================================================================================-->	
+<script src="../../Assets/vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="../../Assets/vendor/bootstrap/js/popper.js"></script>
+	<script src="../../Assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="../../Assets/vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="../../Assets/vendor/tilt/tilt.jquery.min.js"></script>
+
 </html>
      

@@ -12,6 +12,44 @@ function obtenerSentenciaSQL() {
     }
 }
 
+function obtenerdatosEliminados(){
+    try {
+        $sqlSelect = "SELECT * FROM Usuario where eliminado = TRUE LIMIT :filas OFFSET :datos_pagina";
+        return $sqlSelect;
+    } catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+
+}
+
+function mostrarUpdateDatos(){
+    try {
+        $sqlSelect = "SELECT rut_usuario, nombre_usuario, apellido_usuario FROM Usuario where rut_usuario = :rut_usuario";
+        return $sqlSelect;
+    } catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+}
+
+function sqlUpdateDatos(){
+    try {
+        $sqlSelect = "UPDATE Usuario SET 
+                                        nombre_usuario = :nombre_usuario,
+                                        apellido_usuario = :apellido_usuario
+                                        where rut_usuario = :rut_usuario";
+        return $sqlSelect;
+    } catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+
+}
+
 function buscarNfc($nfc) {
     try {
         $sqlSelect = "SELECT
@@ -44,6 +82,17 @@ function borrarUsuarioSQL() {
     }
 }
 
+function recuperarUsuarioEliminadoSql() {
+    try {
+        $sqlDelete = "UPDATE Usuario SET eliminado = FALSE WHERE rut_usuario = :rut_usuario";
+        return $sqlDelete;
+    } catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+}
+
 function registrarDatos(){
     try {
         $registrarDatos = "INSERT into Usuario (rut_usuario,
@@ -67,10 +116,16 @@ function registrarDatos(){
 
 }
 
-function activarModoCreate() {
+function ControladorLogin() {
     try {
-        $sqlDelete = "UPDATE controladorLogin SET crearUsuario = TRUE";
-        return $sqlDelete;
+        $controladorLogin = "INSERT INTO controladorLogin (rut_administrador,
+                                                    rut_usuario,
+                                                    crearNFC)
+                                                    VALUES
+                                                    (:rut_administrador,
+                                                     :rut_usuario,
+                                                     TRUE)";
+        return $controladorLogin;
     } catch (Exception $e) {
         // Manejar cualquier error que pueda ocurrir al leer el archivo
         // Puedes ajustar el manejo de errores según tus necesidades
