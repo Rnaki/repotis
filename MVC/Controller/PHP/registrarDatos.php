@@ -2,7 +2,9 @@
     require_once '../../Model/registrarDatos.php';
     require_once '../../Model/sql.php';
     include '../../Model/conexion.php';
-    header('Content-Type: application/json');
+    header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
 class Administrador {
     private $tempData = []; // Almacena temporalmente los datos
@@ -246,6 +248,39 @@ class Administrador {
         }
 
     }
+    public function leerNfcAdministrador($data) {
+        $sql = leerNfcAdm();  // Asegúrate de tener esta función definida
+    
+        $conexion = establishConnection();
+        $stmt = $conexion->prepare($sql);
+        $rut_usuario = $data["rut_usuario"];
+        $time = 0;
+    
+        try {
+            while ($time <= 3) {
+                $stmt->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
+                $stmt->execute();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+                // Verificar el resultado de la consulta
+                if ($result['resultado'] == 1) {
+                    // Imprime el resultado y sale del bucle
+                    echo $result['resultado'];
+                    break;
+                }
+    
+                sleep(1);
+                $time++;
+            }
+    
+            // Si el bucle termina sin encontrar un resultado, imprime 0
+            if ($result['resultado'] != 1) {
+                echo "0";
+            }
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
 
 }
 $Administrador = new Administrador();
@@ -270,6 +305,8 @@ if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
         $Administrador->preparaNFC($data);
     }elseif($data["funcion"] == "loginAdministrador"){
         $Administrador->loginAdministrador($data);
+    }elseif($data["funcion"] == "leerNfcAdministrador"){
+        $Administrador->leerNfcAdministrador($data);
     }
 }else {
         // Devolver una respuesta de error si los datos no son válidos

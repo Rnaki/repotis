@@ -56,7 +56,13 @@ function buscarNfc($nfc) {
         CASE
             WHEN cl.crearUsuario = 0 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) THEN 'Logear'
             WHEN cl.crearUsuario = 1 AND :nfc IN (SELECT nfc_administrador FROM administrador) THEN 
-                CONCAT('Create ', :nfc) -- Retorna 'Create' seguido del valor de :nfc
+                CASE 
+                    WHEN EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND prepara_nfc = true AND eliminado = 0) THEN
+                        CONCAT('Create ', :nfc) -- Retorna 'Create' seguido del valor de :nfc
+                    ELSE 'False'
+                END
+            WHEN cl.crearUsuario = 1 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND prepara_nfc = true AND eliminado = 0) THEN
+                'Update'
             WHEN cl.crearUsuario = 1 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) THEN 'Logear'
             WHEN cl.crearUsuario = 1 AND NOT EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc) THEN 'False'
             ELSE 'False'
@@ -171,6 +177,21 @@ function loginAdministrador(){
         END as resultado
       FROM administrador 
       WHERE rut_administrador = :rutAdministrador AND password_administrador = :passwordAdministrador;or ";
+    return $loginAdministrador;
+    }catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+}
+
+function leerNfcAdm(){
+    try {
+        $loginAdministrador = "SELECT 
+        CASE 
+          WHEN EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario IS NOT NULL AND rut_usuario = :rut_usuario) THEN 1 
+          ELSE 0 
+        END AS resultado;";
     return $loginAdministrador;
     }catch (Exception $e) {
         // Manejar cualquier error que pueda ocurrir al leer el archivo
