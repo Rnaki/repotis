@@ -52,28 +52,83 @@ function sqlUpdateDatos(){
 
 function buscarNfc($nfc) {
     try {
-        $sqlSelect = "SELECT
-        CASE
-            WHEN cl.crearUsuario = 0 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) THEN 'Logear'
-            WHEN cl.crearUsuario = 1 AND :nfc IN (SELECT nfc_administrador FROM administrador) THEN 
-                CASE 
-                    WHEN EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND prepara_nfc = true AND eliminado = 0) THEN
-                        CONCAT('Create ', :nfc) -- Retorna 'Create' seguido del valor de :nfc
-                    ELSE 'False'
-                END
-            WHEN cl.crearUsuario = 1 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND prepara_nfc = true AND eliminado = 0) THEN
-                'Update'
-            WHEN cl.crearUsuario = 1 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) THEN 'Logear'
-            WHEN cl.crearUsuario = 1 AND NOT EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc) THEN 'False'
-            ELSE 'False'
-        END AS resultado
-    FROM
-        controladorLogin cl;";
-        return $sqlSelect;
+        $sqlSelect = "SELECT 
+        COALESCE(
+            (SELECT 'Create' 
+            FROM Usuario u
+            JOIN administrador a ON u.rut_administrador = a.rut_administrador
+            WHERE u.prepara_nfc = 1
+                AND a.nfc_administrador = :nfc
+                AND u.codigo_nfc_usuario IS NULL
+                AND u.eliminado = 0
+            LIMIT 1),
+            
+            (SELECT 'Update' 
+            FROM Usuario u
+            JOIN administrador a ON u.rut_administrador = a.rut_administrador
+            WHERE u.prepara_nfc = 1
+                AND a.nfc_administrador = :nfc
+                AND u.codigo_nfc_usuario IS NOT NULL
+                AND u.eliminado = 0
+            LIMIT 1),
+            
+            (SELECT 'Login1' 
+            FROM Usuario u
+            JOIN administrador a ON u.rut_administrador = a.rut_administrador
+            WHERE u.prepara_nfc = 0
+                AND a.nfc_administrador != :nfc
+                AND u.codigo_nfc_usuario = :nfc
+                AND u.eliminado = 0
+            LIMIT 1),
+            
+            (SELECT 'Login2' 
+            FROM Usuario u
+            JOIN administrador a ON u.rut_administrador = a.rut_administrador
+            WHERE u.prepara_nfc = 0
+                AND a.nfc_administrador = :nfc
+                AND u.codigo_nfc_usuario IS NOT NULL
+                AND u.eliminado = 0
+            LIMIT 1),
+            
+            (SELECT 'Login3' 
+            FROM Usuario u
+            JOIN administrador a ON u.rut_administrador = a.rut_administrador
+            WHERE u.prepara_nfc = 1
+                AND a.nfc_administrador != :nfc
+                AND u.codigo_nfc_usuario = :nfc
+                AND u.eliminado = 0
+            LIMIT 1)
+        ) as resultado;";
+    return $sqlSelect;
     } catch (Exception $e) {
         // Manejar cualquier error que pueda ocurrir al leer el archivo
         // Puedes ajustar el manejo de errores según tus necesidades
         die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+
+// function buscarNfc($nfc) {
+//     try {
+//         $sqlSelect = "SELECT
+//         CASE
+//             WHEN cl.crearUsuario = 0 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) THEN 'Logear'
+//             WHEN cl.crearUsuario = 1 AND :nfc IN (SELECT nfc_administrador FROM administrador) THEN 
+//                 CASE 
+//                     WHEN EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND prepara_nfc = true AND eliminado = 0) THEN
+//                         CONCAT('Create ', :nfc) -- Retorna 'Create' seguido del valor de :nfc
+//                     ELSE 'False'
+//                 END
+//             WHEN cl.crearUsuario = 1 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND prepara_nfc = true AND eliminado = 0) THEN
+//                 'Update'
+//             WHEN cl.crearUsuario = 1 AND EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc AND eliminado = 0) THEN 'Logear'
+//             WHEN cl.crearUsuario = 1 AND NOT EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario = :nfc) THEN 'False'
+//             ELSE 'False'
+//         END AS resultado
+//     FROM
+//         controladorLogin cl;";
+//         return $sqlSelect;
+//     } catch (Exception $e) {
+//         // Manejar cualquier error que pueda ocurrir al leer el archivo
+//         // Puedes ajustar el manejo de errores según tus necesidades
+//         die('Error al obtener la sentencia SQL: ' . $e->getMessage());
     }
 }
 

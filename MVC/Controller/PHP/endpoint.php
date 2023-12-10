@@ -40,23 +40,23 @@ class NFCProcessor {
             try {
                 $stmt->execute();
                 $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-                $createValue = explode(' ', $resultado['resultado'])[0];
-                echo $createValue;
-                if ($createValue == 'Create') {
-                    // Si el resultado es 'Create', puedes acceder a los valores por separado
-                    $createValue = $resultado['resultado'];
-                    $nfcValue = explode(' ', $createValue)[1];
+                //$createValue = explode(' ', $resultado['resultado'])[0];
+                print_r($resultado);
+                if ($resultado == 'Create') {
+                    // // Si el resultado es 'Create', puedes acceder a los valores por separado
+                    // $createValue = $resultado['resultado'];
+                    // $nfcValue = explode(' ', $createValue)[1];
                 
-                    // Ahora $createValue contendrá 'Create' y $nfcValue contendrá el valor del NFC
+                    // // Ahora $createValue contendrá 'Create' y $nfcValue contendrá el valor del NFC
                 
-                    // Realizar el INSERT en la tabla Usuario
-                    $insertStmt = $conexion->prepare("INSERT INTO Usuario (nfc_administrador) VALUES (:nfc_administrador)");
-                    $insertStmt->bindParam(':nfc_administrador', $nfcValue);
-                    $insertStmt->execute();
+                    // // Realizar el INSERT en la tabla Usuario
+                    // $insertStmt = $conexion->prepare("INSERT INTO Usuario (nfc_administrador) VALUES (:nfc_administrador)");
+                    // $insertStmt->bindParam(':nfc_administrador', $nfcValue);
+                    // $insertStmt->execute();
                 
-                    // Puedes imprimir mensajes o realizar otras acciones según sea necesario
-                    echo "Create Value: $createValue\n";
-                    echo "NFC Value: $nfcValue\n";
+                    // // Puedes imprimir mensajes o realizar otras acciones según sea necesario
+                    // echo "Create Value: $createValue\n";
+                    // echo "NFC Value: $nfcValue\n";
                     echo "INSERT realizado en la tabla Usuario.\n";
                 } else {
                    echo "nop";
