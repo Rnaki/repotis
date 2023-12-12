@@ -54,7 +54,7 @@ function buscarNfc($nfc) {
     try {
         $sqlSelect = "SELECT 
         COALESCE(
-            (SELECT 'Create' 
+            (SELECT CONCAT('Create:', a.nfc_administrador) 
             FROM Usuario u
             JOIN administrador a ON u.rut_administrador = a.rut_administrador
             WHERE u.prepara_nfc = 1
@@ -63,7 +63,7 @@ function buscarNfc($nfc) {
                 AND u.eliminado = 0
             LIMIT 1),
             
-            (SELECT 'Update' 
+            (SELECT CONCAT('Update:', a.nfc_administrador)
             FROM Usuario u
             JOIN administrador a ON u.rut_administrador = a.rut_administrador
             WHERE u.prepara_nfc = 1
@@ -72,7 +72,7 @@ function buscarNfc($nfc) {
                 AND u.eliminado = 0
             LIMIT 1),
             
-            (SELECT 'Login1' 
+            (SELECT 'Login1:' 
             FROM Usuario u
             JOIN administrador a ON u.rut_administrador = a.rut_administrador
             WHERE u.prepara_nfc = 0
@@ -81,7 +81,7 @@ function buscarNfc($nfc) {
                 AND u.eliminado = 0
             LIMIT 1),
             
-            (SELECT 'Login2' 
+            (SELECT 'Login2:' 
             FROM Usuario u
             JOIN administrador a ON u.rut_administrador = a.rut_administrador
             WHERE u.prepara_nfc = 0
@@ -90,7 +90,7 @@ function buscarNfc($nfc) {
                 AND u.eliminado = 0
             LIMIT 1),
             
-            (SELECT 'Login3' 
+            (SELECT 'Login3:' 
             FROM Usuario u
             JOIN administrador a ON u.rut_administrador = a.rut_administrador
             WHERE u.prepara_nfc = 1
@@ -129,6 +129,86 @@ function buscarNfc($nfc) {
 //         // Manejar cualquier error que pueda ocurrir al leer el archivo
 //         // Puedes ajustar el manejo de errores según tus necesidades
 //         die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+}
+
+////////////////////////////////////////
+///////ENDPOINT/////////CREATE//////////
+////////////////////////////////////////
+
+//FUNCION QUE SE EJECUTA DESDE EL ENDPOINT PARA SABER QUE SE LEYO LA NFC DEL ADMIN PARA !!!CREAR!!!
+function administradorCreaNfc(){
+    try {
+        $sqlUpdate = "UPDATE Usuario u 
+        JOIN administrador a ON a.rut_administrador = u.rut_administrador 
+        SET u.admin_prepara_nfc = 
+            CASE 
+                WHEN u.prepara_Nfc = TRUE AND a.nfc_administrador = :nfcAdmin THEN TRUE
+                WHEN u.prepara_Nfc = FALSE AND a.nfc_administrador = :nfcAdmin THEN FALSE
+            END
+        WHERE (u.prepara_Nfc = TRUE AND a.nfc_administrador = :nfcAdmin)
+           OR (u.prepara_Nfc = FALSE AND a.nfc_administrador = :nfcAdmin);";
+        return $sqlUpdate;
+    } catch (Exception $e) {
+        // Handle any error that may occur while generating the SQL statement
+        // You can adjust error handling based on your needs
+        die('Error getting SQL statement: ' . $e->getMessage());
+    }
+}
+
+//FUNCION QUE SE EJECUTA DESDE ENDPOINT PARA SABER QUE SE LEYO LA NFC DEL NUEVO USUARIO 
+
+function createUserNfc() {
+    try {
+        $sqlUpdate = "UPDATE Usuario u 
+                      JOIN administrador a ON a.rut_administrador = u.rut_administrador 
+                      SET u.codigo_nfc_usuario = :nfcNewUser 
+                      WHERE a.nfc_administrador = :nfc_administrador 
+                      AND u.prepara_Nfc = TRUE";
+        return $sqlUpdate;
+    } catch (Exception $e) {
+        // Handle any error that may occur while generating the SQL statement
+        // You can adjust error handling based on your needs
+        die('Error getting SQL statement: ' . $e->getMessage());
+    }
+}
+
+////////////////////////////////////////////////
+//////CLIENTE-SERVIDOR//////////CREATE//////////
+////////////////////////////////////////////////
+
+//FUNCION QUE LEE DESDE EL CLIENTE WEB SI HA INGREASDO LA NFC DEL ADMINISTRADOR
+function leerNfcAdm(){
+    try {
+        $loginAdministrador = "SELECT 
+        CASE 
+          WHEN EXISTS (SELECT 1 FROM Usuario WHERE admin_prepara_nfc = TRUE
+                                                AND (codigo_nfc_usuario IS NULL OR codigo_nfc_usuario = '') 
+                                                AND rut_usuario = :rut_usuario) THEN 1 
+          ELSE 0 
+        END AS resultado;";
+    return $loginAdministrador;
+    }catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir al leer el archivo
+        // Puedes ajustar el manejo de errores según tus necesidades
+        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
+    }
+}
+
+//FUNCION QUE LEE DESDE EL CLIENTE WEB SI HA INGRESADO LA NFC DEL NUEVO USUARIO
+function leerNfcNuevaIngresada(){
+    try {
+        $sqlUpdate = "SELECT 
+            CASE 
+                WHEN EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario IS NOT NULL
+                                                AND rut_usuario = :rut_usuario) THEN 1 
+                ELSE 0 
+            END AS resultado";
+        return $sqlUpdate;
+    } catch (Exception $e) {
+        // Handle any error that may occur while reading the file
+        // You can adjust error handling based on your needs
+        die('Error getting SQL statement: ' . $e->getMessage());
     }
 }
 
@@ -194,17 +274,6 @@ function ControladorLogin() {
     }
 }
 
-function registrarNFC(){
-    try {
-        $registrarNFC = "INSERT INTO USUARIO (codigo_nfc_usuario) VALUES (:nfc_codigo_usuario)";
-        return $registrarNFC;
-    } catch (Exception $e) {
-        // Manejar cualquier error que pueda ocurrir al leer el archivo
-        // Puedes ajustar el manejo de errores según tus necesidades
-        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
-    }
-}
-
 function preparaNFC(){
     try {
         $preparaNFC = "UPDATE Usuario
@@ -240,20 +309,7 @@ function loginAdministrador(){
     }
 }
 
-function leerNfcAdm(){
-    try {
-        $loginAdministrador = "SELECT 
-        CASE 
-          WHEN EXISTS (SELECT 1 FROM Usuario WHERE codigo_nfc_usuario IS NOT NULL AND rut_usuario = :rut_usuario) THEN 1 
-          ELSE 0 
-        END AS resultado;";
-    return $loginAdministrador;
-    }catch (Exception $e) {
-        // Manejar cualquier error que pueda ocurrir al leer el archivo
-        // Puedes ajustar el manejo de errores según tus necesidades
-        die('Error al obtener la sentencia SQL: ' . $e->getMessage());
-    }
-}
+
 
 
 

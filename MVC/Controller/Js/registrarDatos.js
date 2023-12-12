@@ -249,6 +249,40 @@ class Administrador {
         });
     }
 
+        
+    leerNfcNueva(rut_usuario){
+        const formData ={
+            funcion: "leerNfcNueva",
+            rut_usuario : rut_usuario
+        }
+        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        //Recibe Respuesta
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server if needed
+            if (data === 1) {
+                // Obtén el elemento por su ID
+                $('#modalLeyendoNFC').modal('hide');
+                this.verDatos();
+            } else {
+                // Manejar otros casos (puedes agregar lógica adicional aquí)
+                console.error('Error en el servidor:', data.message);
+            }
+        })
+        //Respuesta en caso de error
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
+        });
+        
+    }
+
+
     preparaNFC(rut_usuario){
         //Prepara Datos
         const formData ={
@@ -291,6 +325,7 @@ class Administrador {
 
                         // Cambia el texto del elemento
                         mensajeNFCElemento.textContent = "INSERTE NUEVA NFC";
+                        this.leerNfcNueva(rut_usuario);
                         
                     } else {
                         // Manejar otros casos (puedes agregar lógica adicional aquí)
@@ -312,6 +347,9 @@ class Administrador {
             console.error('Error en la solicitud:', error);
         });
     }
+
+    
+    
 
     RecuperarUsuario(rut_usuarioEliminado){
         //Prepara datos
@@ -496,3 +534,4 @@ function crearTablaEliminados(datos) {
         nuevaCeldaRecuperarUsuario.appendChild(RecuperarUsuario);
     });
 }
+

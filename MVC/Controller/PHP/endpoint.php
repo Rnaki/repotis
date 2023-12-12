@@ -30,7 +30,7 @@ class NFCProcessor {
         $conexion = establishConnection();
     
         // Verificar si solo hay datos NFC y no hay reconocimiento facial
-        if ($decodedData["nfc"] !== null) {
+        if (isset($decodedData["nfc"]) && $decodedData["nfc"] !== null) {
                 $valor1 = $decodedData["nfc"]; // Ajusta según tu implementación
                 $sql = buscarNfc($valor1); // Ajusta esto según tu implementación
                 $stmt = $conexion->prepare($sql);
@@ -40,38 +40,52 @@ class NFCProcessor {
             try {
                 $stmt->execute();
                 $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-                //$createValue = explode(' ', $resultado['resultado'])[0];
                 print_r($resultado);
-                if ($resultado == 'Create') {
-                    // // Si el resultado es 'Create', puedes acceder a los valores por separado
-                    // $createValue = $resultado['resultado'];
-                    // $nfcValue = explode(' ', $createValue)[1];
-                
-                    // // Ahora $createValue contendrá 'Create' y $nfcValue contendrá el valor del NFC
-                
-                    // // Realizar el INSERT en la tabla Usuario
-                    // $insertStmt = $conexion->prepare("INSERT INTO Usuario (nfc_administrador) VALUES (:nfc_administrador)");
-                    // $insertStmt->bindParam(':nfc_administrador', $nfcValue);
-                    // $insertStmt->execute();
-                
-                    // // Puedes imprimir mensajes o realizar otras acciones según sea necesario
-                    // echo "Create Value: $createValue\n";
-                    // echo "NFC Value: $nfcValue\n";
-                    echo "INSERT realizado en la tabla Usuario.\n";
-                } else {
-                   echo "nop";
+                // Access the 'resultado' value
+            $fullResult = $resultado['resultado'];
+
+            // Extract the action and NFC value
+            list($action, $nfc_administrador) = explode(':', $fullResult);
+            if($action == 'Create'){
+                session_start();
+                echo $_SESSION["nfc_administrador"] = $nfc_administrador;
+                $sql2 = administradorCreaNfc();
+                $stmt2 = $conexion->prepare($sql2);
+                $stmt2->bindParam(':nfcAdmin', $_SESSION["nfc_administrador"], PDO::PARAM_STR);
+                try {
+                    $stmt2->execute();
+                    $resultado2 = $stmt2->fetch(PDO::FETCH_ASSOC);
+                    echo $resultado2;
+                } catch (PDOException $e) {
+                    echo "Error: " . $e->getMessage();
                 }
+
+            }
             
-                
             } catch (PDOException $e) {
                 echo "Error: " . $e->getMessage();
             }
-                
-          //  echo $decodedData["nfc"];
-            // $this->processNFCData($decodedData["nfc"]);
-           // echo "logrado nfc";  // Añade un mensaje para verificar si llega a este punto
         } 
-        // Verificar si solo hay reconocimiento facial y no hay datos NFC
+        //Verifica si el post corresponde a create
+        elseif (isset($decodedData["nfcCreate"]) && $decodedData["nfcCreate"] !== null) {
+            echo $nfcNewUser = $decodedData["nfcCreate"];
+            session_start();
+            echo $_SESSION["nfc_administrador"];
+            $sql3 = createUserNfc();
+
+            $stmt3 = $conexion->prepare($sql3);
+            $stmt3->bindParam(':nfcNewUser', $nfcNewUser, PDO::PARAM_STR);
+            $stmt3->bindParam(':nfc_administrador', $_SESSION["nfc_administrador"], PDO::PARAM_STR);
+        
+            try {
+                $stmt3->execute();
+                $resultado3 = $stmt3->fetch(PDO::FETCH_ASSOC);
+                echo $resultado3;
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+            }
+
+        } 
         elseif ($decodedData["nfc"] === null && $decodedData["rf"] !== null) {
             echo "logrado reconocimiento facial";
         } 

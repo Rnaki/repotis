@@ -257,15 +257,50 @@ class Administrador {
         $time = 0;
     
         try {
-            while ($time <= 3) {
+            while ($time <= 30) {
+                $stmt->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
+                $stmt->execute();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                // Verificar el resultado de la consulta
+                if ($result['resultado'] == 1) {
+                    $bell = $result['resultado'];
+                    // Imprime el resultado y sale del bucle
+                    echo $result['resultado'];
+                    break;
+                }
+                sleep(1);
+                $time++;
+            }
+            if ($bell != 1){
+                echo 0;
+            }
+            // Si el bucle termina sin encontrar un resultado, imprime 0
+            
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+    public function leerNfcNueva($data){
+        $sql2 = leerNfcNuevaIngresada();  // Make sure this function is defined
+    
+        $conexion = establishConnection();
+        $rut_usuario = $data["rut_usuario"];
+        $time = 0;
+        $bell = 0; // Initialize the variable
+        $resultValue = 0; // Initialize a variable to store the result
+    
+        $stmt = $conexion->prepare($sql2);
+    
+        try {
+            while ($time <= 30) {
                 $stmt->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
     
-                // Verificar el resultado de la consulta
+                // Check the result of the query
                 if ($result['resultado'] == 1) {
-                    // Imprime el resultado y sale del bucle
-                    echo $result['resultado'];
+                    $bell = $result['resultado'];
+                    echo $resultValue = $result['resultado'];
                     break;
                 }
     
@@ -273,14 +308,18 @@ class Administrador {
                 $time++;
             }
     
-            // Si el bucle termina sin encontrar un resultado, imprime 0
-            if ($result['resultado'] != 1) {
-                echo "0";
+            // If the loop finishes without finding a result, set the result value to 0
+            if ($bell != 1){
+                echo 0;
             }
+            // Si el bucle termina sin encontrar un resultado, imprime 0
+            
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
+    
     }
+    
 
 }
 $Administrador = new Administrador();
@@ -307,6 +346,8 @@ if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
         $Administrador->loginAdministrador($data);
     }elseif($data["funcion"] == "leerNfcAdministrador"){
         $Administrador->leerNfcAdministrador($data);
+    }elseif($data["funcion"] == "leerNfcNueva"){
+        $Administrador->leerNfcNueva($data);
     }
 }else {
         // Devolver una respuesta de error si los datos no son válidos
