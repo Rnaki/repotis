@@ -40,15 +40,15 @@ class NFCProcessor {
             try {
                 $stmt->execute();
                 $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-                print_r($resultado);
+                $resultado;
                 // Access the 'resultado' value
-            $fullResult = $resultado['resultado'];
+                echo $fullResult = $resultado['resultado'];
 
             // Extract the action and NFC value
             list($action, $nfc_administrador) = explode(':', $fullResult);
             if($action == 'Create'){
                 session_start();
-                echo $_SESSION["nfc_administrador"] = $nfc_administrador;
+                $_SESSION["nfc_administrador"] = $nfc_administrador;
                 $sql2 = administradorCreaNfc();
                 $stmt2 = $conexion->prepare($sql2);
                 $stmt2->bindParam(':nfcAdmin', $_SESSION["nfc_administrador"], PDO::PARAM_STR);
@@ -60,6 +60,19 @@ class NFCProcessor {
                     echo "Error: " . $e->getMessage();
                 }
 
+            }else if($action == 'Update'){
+                session_start();
+                $_SESSION["nfc_administrador"] = $nfc_administrador;
+                $sql3 = administradorUpdateNfc();
+                $stmt3 = $conexion->prepare($sql3);
+                $stmt3->bindParam(':nfcAdmin', $_SESSION["nfc_administrador"], PDO::PARAM_STR);
+                try {
+                    $stmt3->execute();
+                    $resultado3 = $stmt3->fetch(PDO::FETCH_ASSOC);
+                    echo $resultado3;
+                } catch (PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
             }
             
             } catch (PDOException $e) {
@@ -68,21 +81,40 @@ class NFCProcessor {
         } 
         //Verifica si el post corresponde a create
         elseif (isset($decodedData["nfcCreate"]) && $decodedData["nfcCreate"] !== null) {
-            echo $nfcNewUser = $decodedData["nfcCreate"];
-            session_start();
-            echo $_SESSION["nfc_administrador"];
+            $nfcNewUser = $decodedData["nfcCreate"];
+            $nfc_administrador = $decodedData["nfcAdmin"];
             $sql3 = createUserNfc();
 
             $stmt3 = $conexion->prepare($sql3);
             $stmt3->bindParam(':nfcNewUser', $nfcNewUser, PDO::PARAM_STR);
-            $stmt3->bindParam(':nfc_administrador', $_SESSION["nfc_administrador"], PDO::PARAM_STR);
+            $stmt3->bindParam(':nfc_administrador', $nfc_administrador, PDO::PARAM_STR);
         
             try {
                 $stmt3->execute();
                 $resultado3 = $stmt3->fetch(PDO::FETCH_ASSOC);
-                echo $resultado3;
-            } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage();
+                 echo $resultado3;
+             } catch (PDOException $e) {
+                 echo "Error: " . $e->getMessage();
+            }
+
+        } 
+        elseif (isset($decodedData["nfcUpdate"]) && $decodedData["nfcUpdate"] !== null) {
+            $nfcUpdateUser = $decodedData["nfcUpdate"];
+            $nfc_administrador = $decodedData["nfcAdmin"];
+            echo $new_time_update = date("Y-m-d H:i:s");
+            $sql3 = UpdateUserNfc();
+        
+            $stmt3 = $conexion->prepare($sql3);
+            $stmt3->bindParam(':nfcUpdateUser', $nfcUpdateUser, PDO::PARAM_STR);
+            $stmt3->bindParam(':nfc_administrador', $nfc_administrador, PDO::PARAM_STR);
+            $stmt3->bindParam(':new_time_update', $new_time_update, PDO::PARAM_STR);
+        
+            try {
+                $stmt3->execute();
+                $resultado3 = $stmt3->fetch(PDO::FETCH_ASSOC);
+                return 1;
+             } catch (PDOException $e) {
+                 echo "Error: " . $e->getMessage();
             }
 
         } 

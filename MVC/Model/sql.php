@@ -164,7 +164,49 @@ function createUserNfc() {
                       JOIN administrador a ON a.rut_administrador = u.rut_administrador 
                       SET u.codigo_nfc_usuario = :nfcNewUser 
                       WHERE a.nfc_administrador = :nfc_administrador 
-                      AND u.prepara_Nfc = TRUE";
+                      AND u.prepara_Nfc = TRUE
+                      AND u.admin_prepara_nfc = TRUE";
+        return $sqlUpdate;
+    } catch (Exception $e) {
+        // Handle any error that may occur while generating the SQL statement
+        // You can adjust error handling based on your needs
+        die('Error getting SQL statement: ' . $e->getMessage());
+    }
+}
+
+////////////////////////////////////////////////
+/////ENDOPOINT/////////////UPDATE//////////////
+//////////////////////////////////////////////
+
+function administradorUpdateNfc(){
+    try {
+        $sqlUpdate = "UPDATE Usuario u 
+        JOIN administrador a ON a.rut_administrador = u.rut_administrador 
+        SET u.admin_prepara_nfc_update = 
+            CASE 
+                WHEN u.prepara_Nfc = TRUE AND a.nfc_administrador = :nfcAdmin THEN TRUE
+                WHEN u.prepara_Nfc = FALSE AND a.nfc_administrador = :nfcAdmin THEN FALSE
+            END
+        WHERE (u.prepara_Nfc = TRUE AND a.nfc_administrador = :nfcAdmin)
+           OR (u.prepara_Nfc = FALSE AND a.nfc_administrador = :nfcAdmin);";
+        return $sqlUpdate;
+    } catch (Exception $e) {
+        // Handle any error that may occur while generating the SQL statement
+        // You can adjust error handling based on your needs
+        die('Error getting SQL statement: ' . $e->getMessage());
+    }
+}
+// FUNCION QUE UPDATEA NFC
+
+function UpdateUserNfc() {
+    try {
+        $sqlUpdate = "UPDATE Usuario u 
+                      JOIN administrador a ON a.rut_administrador = u.rut_administrador 
+                      SET u.codigo_nfc_usuario = :nfcUpdateUser,
+                          u.updated_at_usuario = :new_time_update
+                      WHERE a.nfc_administrador = :nfc_administrador 
+                      AND u.prepara_Nfc = TRUE
+                      AND u.admin_prepara_nfc_update = TRUE;";
         return $sqlUpdate;
     } catch (Exception $e) {
         // Handle any error that may occur while generating the SQL statement
@@ -185,6 +227,9 @@ function leerNfcAdm(){
           WHEN EXISTS (SELECT 1 FROM Usuario WHERE admin_prepara_nfc = TRUE
                                                 AND (codigo_nfc_usuario IS NULL OR codigo_nfc_usuario = '') 
                                                 AND rut_usuario = :rut_usuario) THEN 1 
+          WHEN EXISTS (SELECT 1 FROM Usuario WHERE admin_prepara_nfc_update = TRUE
+                                                AND (codigo_nfc_usuario IS NOT NULL OR codigo_nfc_usuario != '')
+                                                AND rut_usuario = :rut_usuario) THEN 2
           ELSE 0 
         END AS resultado;";
     return $loginAdministrador;
@@ -204,6 +249,36 @@ function leerNfcNuevaIngresada(){
                                                 AND rut_usuario = :rut_usuario) THEN 1 
                 ELSE 0 
             END AS resultado";
+        return $sqlUpdate;
+    } catch (Exception $e) {
+        // Handle any error that may occur while reading the file
+        // You can adjust error handling based on your needs
+        die('Error getting SQL statement: ' . $e->getMessage());
+    }
+}
+
+function obtenerTimeNfc(){
+    try {
+        $sqlUpdate = "SELECT updated_at_usuario from Usuario Where rut_usuario = :rut_usuario
+                                                            AND rut_administrador = :rut_administrador
+                                                            AND prepara_nfc = TRUE
+                                                            AND admin_prepara_nfc_update = TRUE";
+        return $sqlUpdate;
+    } catch (Exception $e) {
+        // Handle any error that may occur while reading the file
+        // You can adjust error handling based on your needs
+        die('Error getting SQL statement: ' . $e->getMessage());
+    }
+
+}
+
+//FUNCION QUE LEE DESDE EL CLIENTE WEB SI HA INGRESADO LA NFC PARA UPDATEAR AL USUARIO
+function leerNfcNuevaIngresadaUpdate(){
+    try {
+        $sqlUpdate = "SELECT updated_at_usuario from Usuario Where rut_usuario = :rut_usuario
+                                                            AND rut_administrador = :rut_administrador
+                                                            AND prepara_nfc = TRUE
+                                                            AND admin_prepara_nfc_update = TRUE";
         return $sqlUpdate;
     } catch (Exception $e) {
         // Handle any error that may occur while reading the file

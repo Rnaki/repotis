@@ -282,6 +282,37 @@ class Administrador {
         
     }
 
+    leerNfcNuevaUpdate(rut_usuario){
+        const formData ={
+            funcion: "leerNfcNuevaUpdate",
+            rut_usuario : rut_usuario
+        }
+        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        //Recibe Respuesta
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server if needed
+            if (data === 1) {
+                // Obtén el elemento por su ID
+                $('#modalLeyendoNFC').modal('hide');
+                this.verDatos();
+            } else {
+                // Manejar otros casos (puedes agregar lógica adicional aquí)
+                console.error('Error en el servidor:', data.message);
+            }
+        })
+        //Respuesta en caso de error
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
+        });
+    }
+
 
     preparaNFC(rut_usuario){
         //Prepara Datos
@@ -315,26 +346,29 @@ class Administrador {
                     },
                     body: JSON.stringify(formData)
                 })
-                //Recibe Respuesta
-                .then(response => response.json())
+                .then(response => response.text())
                 .then(data => {
-                    // Handle the response from the server if needed
-                    if (data === 1) {
-                        // Obtén el elemento por su ID
-                        var mensajeNFCElemento = document.getElementById("MensajeNFC");
+                    console.log('Raw Response:', data);
+                    if (data == 1) {
+                                // Obtén el elemento por su ID
+                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
 
-                        // Cambia el texto del elemento
-                        mensajeNFCElemento.textContent = "INSERTE NUEVA NFC";
-                        this.leerNfcNueva(rut_usuario);
-                        
-                    } else {
-                        // Manejar otros casos (puedes agregar lógica adicional aquí)
-                        console.error('Error en el servidor:', data.message);
-                    }
-                })
+                                // Cambia el texto del elemento
+                                mensajeNFCElemento.textContent = "INSERTE NUEVA NFC";
+                                this.leerNfcNueva(rut_usuario);
+                                
+                            } else if(data == 2) {
+                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
+                                mensajeNFCElemento.textContent = "INSERTE NUEVA NFC UPDATE";
+                                this.leerNfcNuevaUpdate(rut_usuario);
+                                // Manejar otros casos (puedes agregar lógica adicional aquí)
+                                
+                            }
+
+})
                 //Respuesta en caso de error
                 .catch(error => {
-                    console.error('Error en la solicitud:', error);
+                       console.error('Error en la solicitud:', error);
                 });
                 
             } else {
@@ -468,6 +502,20 @@ function crearTabla(datos) {
             objpreparaNFC.preparaNFC(rut_usuario);
         });
         nuevaCeldapreparaNFC.appendChild(preparaNFC);
+
+        //Boton 1
+        // Agregar una celda (preparar NFC) con un botón y asociar el RUT del usuario
+        var nuevaCeldapreparaNFCUpdate = nuevaFila.insertCell();
+        var preparaNFCUpdate = document.createElement('button');
+        preparaNFCUpdate.textContent = 'Update NFC';
+        preparaNFCUpdate.className = 'btn btn-success';
+        // Asociar el RUT del usuario al botón (puedes usar un atributo personalizado)
+        preparaNFCUpdate.dataset.rutUsuario = fila.rut_usuario;
+        preparaNFCUpdate.addEventListener('click', function () {
+            var objpreparaNFCUpdate = new Administrador();
+            objpreparaNFCUpdate.preparaNFC(rut_usuario);
+        });
+        nuevaCeldapreparaNFCUpdate.appendChild(preparaNFCUpdate);
 
         //Boton 2
         // Agregar una celda (UPDATE DATOS) con un botón y asociar el RUT del usuario

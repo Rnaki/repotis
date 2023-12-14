@@ -255,7 +255,7 @@ class Administrador {
         $stmt = $conexion->prepare($sql);
         $rut_usuario = $data["rut_usuario"];
         $time = 0;
-    
+        $bell = NULL;
         try {
             while ($time <= 30) {
                 $stmt->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
@@ -267,12 +267,14 @@ class Administrador {
                     // Imprime el resultado y sale del bucle
                     echo $result['resultado'];
                     break;
+                }else if ($result['resultado'] == 2){
+                    echo $result['resultado'];
+                    break;
+                }else{
+                    echo $result['resultado'];
                 }
                 sleep(1);
                 $time++;
-            }
-            if ($bell != 1){
-                echo 0;
             }
             // Si el bucle termina sin encontrar un resultado, imprime 0
             
@@ -319,7 +321,54 @@ class Administrador {
         }
     
     }
+    public function leerNfcNuevaUpdate($data){
+        session_start();
+        $sql0 = obtenerTimeNfc();
+        $conexion = establishConnection();
+        $rut_usuario = $data["rut_usuario"];
+        $rut_administrador = $_SESSION["rut"];
+        $stmt0 = $conexion->prepare($sql0);
+        $stmt0->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
+        $stmt0->bindParam(':rut_administrador', $rut_administrador, PDO::PARAM_STR);
+        $stmt0->execute();
+        $result0 = $stmt0->fetch(PDO::FETCH_ASSOC);
+        $recorded_time = $result0['updated_at_usuario'];
+        
+        $sql1 = leerNfcNuevaIngresadaUpdate();  // Make sure this function is defined
     
+        $conexion = establishConnection();
+        $rut_usuario = $data["rut_usuario"];
+        $time = 0;
+        $bell = 0; // Initialize the variable
+        $resultValue = 0; // Initialize a variable to store the result
+    
+        $stmt = $conexion->prepare($sql1);
+    
+        try {
+            while ($time <= 30 || $recorded_time != $new_time) {
+                $stmt->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
+                $stmt->bindParam(':rut_administrador', $rut_administrador, PDO::PARAM_STR);
+                $stmt->execute();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $new_time = $result['updated_at_usuario'];
+                // Check the result of the query
+                if ($recorded_time != $new_time) {
+                   echo 1;
+                   break;
+                }
+    
+                sleep(1);
+                $time++;
+            }
+    
+            // If the loop finishes without finding a result, set the result value to 0
+            // Si el bucle termina sin encontrar un resultado, imprime 0
+            
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    
+    }
 
 }
 $Administrador = new Administrador();
@@ -348,6 +397,8 @@ if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
         $Administrador->leerNfcAdministrador($data);
     }elseif($data["funcion"] == "leerNfcNueva"){
         $Administrador->leerNfcNueva($data);
+    }elseif($data["funcion"] == "leerNfcNuevaUpdate"){
+        $Administrador->leerNfcNuevaUpdate($data);
     }
 }else {
         // Devolver una respuesta de error si los datos no son válidos
