@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-  
-  <!--===============================================================================================-->	
+
+  <!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="../../Assets/images/icons/favicon.ico"/>
   <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="../../Assets/vendor/bootstrap/css/bootstrap.min.css">
@@ -13,13 +13,15 @@
     <link rel="stylesheet" type="text/css" href="../../Assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
   <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="../../Assets/vendor/animate/animate.css">
-  <!--===============================================================================================-->	
+  <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="../../Assets/vendor/css-hamburgers/hamburgers.min.css">
   <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="../../Assets/vendor/select2/select2.min.css">
   <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="../../Assets/css/util.css">
     <link rel="stylesheet" type="text/css" href="../../Assets/css/main.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="../../Assets/vendor/alertifyjs/css/alertify.min.css">
   <!--===============================================================================================-->
   <link rel="stylesheet" type="text/css" href="../../Assets/css/estilos.css">
 </head>
@@ -40,12 +42,15 @@
 
         <!-- Contenido de los tabs -->
         <div class="tab-content">
+            <div>
+              <button class="btn btn-danger" onclick="var admin = new Administrador(); admin.logoutAdministrador()">Cerrar Sesión</button>
+            </div>
             <div class="tab-pane fade show active" id="tabla1">
                 <!-- Contenido de la Tabla 1 -->
                 <form action="../View/registrarDatos.html" method="post">
                     <button type="submit" class="btn btn-dark">REGISTRAR</button>
                 </form>
-                
+
       <table class="table table-bordered">
         <thead class="thead-light">
             <tr>
@@ -83,7 +88,7 @@
                   </tbody>
               </table>
           </div>
-          
+
         </div>
     </div>
 
@@ -146,8 +151,13 @@
       document.getElementById('tabla2').classList.add('show', 'active');
   });
 </script>
-
-<!--===============================================================================================-->	
+<style>
+  /* Anula la propiedad opacity para las alertas básicas */
+  .ajs-basic .ajs-header {
+    opacity: 1 !important;
+  }
+</style>
+<!--===============================================================================================-->
 <script src="../../Assets/vendor/jquery/jquery-3.2.1.min.js"></script>
 <!--===============================================================================================-->
 	<script src="../../Assets/vendor/bootstrap/js/popper.js"></script>
@@ -156,6 +166,6 @@
 	<script src="../../Assets/vendor/select2/select2.min.js"></script>
 <!--===============================================================================================-->
 	<script src="../../Assets/vendor/tilt/tilt.jquery.min.js"></script>
-
+  <!--===============================================================================================-->
+  <script src="../../Assets/vendor/alertifyjs/alertify.min.js"></script>
 </html>
-     
