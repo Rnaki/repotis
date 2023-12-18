@@ -257,15 +257,6 @@ class Administrador {
             funcion: "leerNfcNueva",
             rut_usuario : rut_usuario
         }
-        //alertify.alert('INSERTE NUEVA NFC', `<img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`).set('basic', true);
-        /*alertify.alert()
-        .setting({
-            'label': 'Cerrar',
-            'message': `<div style="color: black;">INSERTE NFC ADMINISTRADOR</div><img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`,
-            'onok': function () { alertify.success('Cerrado'); }
-        })
-        .show();
-        */
         fetch('/MVC/Controller/PHP/registrarDatos.php', {
             method: 'POST',
             headers: {
@@ -279,13 +270,14 @@ class Administrador {
             // Handle the response from the server if needed
             if (data === 1) {
                 // Obtén el elemento por su ID
-                $('#modalLeyendoNFC').modal('hide');
-                //mostrarNotificacion(`NFC ingresado exitosamente:`, 'success');
+                //$('#modalLeyendoNFC').modal('hide');
+                mostrarNotificacion(`NFC ingresado exitosamente:`, 'success');
+                alertify.closeAll();
                 this.verDatos();
             } else {
                 // Manejar otros casos (puedes agregar lógica adicional aquí)
                 console.error('Error en el servidor:', data.message);
-                //mostrarNotificacion(`Error en el servidor: ${data.message}`, data.status);
+                mostrarNotificacion(`Error en el servidor: ${data.message}`, data.status);
             }
         })
         //Respuesta en caso de error
@@ -335,7 +327,6 @@ class Administrador {
         }
         console.log(formData);
         //Envia Datos
-        //alertify.alert('INSERTE NFC ADMINISTRADOR', `<img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`).set('basic', true);
         fetch('/MVC/Controller/PHP/registrarDatos.php', {
             method: 'POST',
             headers: {
@@ -348,7 +339,7 @@ class Administrador {
         .then(data => {
             // Handle the response from the server if needed
             if (data === 1) {
-                $('#modalLeyendoNFC').modal('show');
+                //$('#modalLeyendoNFC').modal('show');
                 const formData ={
                     funcion: "leerNfcAdministrador",
                     rut_usuario : rut_usuario
@@ -368,12 +359,15 @@ class Administrador {
                                 var mensajeNFCElemento = document.getElementById("MensajeNFC");
                                 //alertify.success('NFC ingresado exitosamente');
                                 // Cambia el texto del elemento
-                                mensajeNFCElemento.textContent = "INSERTE NUEVA NFC";
+                                //mensajeNFCElemento.textContent = "INSERTE NUEVA NFC";
+                                alertify.closeAll();
+                                alertify.alert('INSERTE NUEVA NFC', `<img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`).set('closable', false);
                                 this.leerNfcNueva(rut_usuario);
 
                     } else if(data == 2) {
                         var mensajeNFCElemento = document.getElementById("MensajeNFC");
-                        mensajeNFCElemento.textContent = "INSERTE NUEVA NFC UPDATE";
+                        //mensajeNFCElemento.textContent = "INSERTE NUEVA NFC UPDATE";
+                        alertify.alert('INSERTE NUEVA NFC UPDATE', `<img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`).set('closable', false);
                         this.leerNfcNuevaUpdate(rut_usuario);
                         // Manejar otros casos (puedes agregar lógica adicional aquí)
 
@@ -388,7 +382,7 @@ class Administrador {
             } else {
                 // Manejar otros casos (puedes agregar lógica adicional aquí)
                 console.error('Error en el servidor:', data.message);
-                //mostrarNotificacion(`Error en el servidor: ${data.message}`, data.status);
+                mostrarNotificacion(`Error en el servidor: ${data.message}`, data.status);
             }
         })
         //Respuesta en caso de error
@@ -532,6 +526,7 @@ function crearTabla(datos) {
         preparaNFC.dataset.rutUsuario = fila.rut_usuario;
         preparaNFC.addEventListener('click', function () {
             var objpreparaNFC = new Administrador();
+            alertify.alert('INSERTE NFC ADMINISTRADOR', `<img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`).set('closable', false);
             objpreparaNFC.preparaNFC(rut_usuario);
             //alertify.alert('INSERTE NFC ADMINISTRADOR', gifElement, function(){ objpreparaNFC.preparaNFC(rut_usuario); }).set('label', 'Cerrar');
         });
@@ -547,6 +542,7 @@ function crearTabla(datos) {
         preparaNFCUpdate.dataset.rutUsuario = fila.rut_usuario;
         preparaNFCUpdate.addEventListener('click', function () {
             var objpreparaNFCUpdate = new Administrador();
+            alertify.alert('INSERTE NFC ADMINISTRADOR', `<img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`).set('closable', false);
             objpreparaNFCUpdate.preparaNFC(rut_usuario);
         });
         nuevaCeldapreparaNFCUpdate.appendChild(preparaNFCUpdate);
