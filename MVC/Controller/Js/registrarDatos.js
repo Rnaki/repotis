@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     // Crear una instancia de la clase cuando se carga la página
     var instanciaVerDatosUsuario = new Administrador();
@@ -7,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     //     instanciaVerDatosUsuario.registrarDatos();
     // });
 });
-
 
 class Administrador {
     constructor() {
@@ -84,9 +84,9 @@ class Administrador {
             funcion: "mostrarUpdateDatos",
             rut_usuario: rut_usuario
         };
-    
+
         console.log(formData);
-    
+
         fetch('/MVC/Controller/PHP/registrarDatos.php', {
             method: 'POST',
             headers: {
@@ -106,12 +106,12 @@ class Administrador {
             try {
                 const jsonData = JSON.parse(data);
                 console.log(jsonData);
-    
+
                 if (jsonData.success === 1) {
                     document.getElementById('modalRutUsuario').value = jsonData.rut_usuario;
                     document.getElementById('modalNombreUsuario').value = jsonData.nombre_usuario;
                     document.getElementById('modalApellidoUsuario').value = jsonData.apellido_usuario;
-    
+
                     // Muestra el modal
                     $('#modalUpdateDatos').modal('show');
                 } else {
@@ -131,7 +131,7 @@ class Administrador {
          const rut_usuario = document.getElementById('modalRutUsuario').value;
          const nombre_usuario = document.getElementById('modalNombreUsuario').value;
          const apellido_usuario = document.getElementById('modalApellidoUsuario').value;
- 
+
          const formData = {
              funcion: "updateDatos",
              rut_usuario: rut_usuario,
@@ -165,7 +165,7 @@ class Administrador {
              console.error('Error:', error);
          });
      }
- 
+
 
     registrarDatos() {
         // Prepara Datos
@@ -210,7 +210,7 @@ class Administrador {
         });
     }
 
-    
+
 
     borrarUsuario(rut_usuario){
         //Prepara datos
@@ -238,9 +238,11 @@ class Administrador {
                 this.verDatos();
                 console.log(data);
                 // No necesitas iterar sobre data aquí
+                mostrarNotificacion(`NFC borrado exitosamente:`, 'success');
             } else {
                 // Manejar otros casos (puedes agregar lógica adicional aquí)
                 console.error('Error en el servidor:', data.message);
+                mostrarNotificacion(`Error en el servidor: ${data.message}`, data.status);
             }
         })
         //Respuesta en caso de error
@@ -249,7 +251,7 @@ class Administrador {
         });
     }
 
-        
+
     leerNfcNueva(rut_usuario){
         const formData ={
             funcion: "leerNfcNueva",
@@ -268,18 +270,21 @@ class Administrador {
             // Handle the response from the server if needed
             if (data === 1) {
                 // Obtén el elemento por su ID
-                $('#modalLeyendoNFC').modal('hide');
+                //$('#modalLeyendoNFC').modal('hide');
+                mostrarNotificacion(`NFC ingresado exitosamente:`, 'success');
+                alertify.closeAll();
                 this.verDatos();
             } else {
                 // Manejar otros casos (puedes agregar lógica adicional aquí)
                 console.error('Error en el servidor:', data.message);
+                mostrarNotificacion(`Error en el servidor: ${data.message}`, data.status);
             }
         })
         //Respuesta en caso de error
         .catch(error => {
             console.error('Error en la solicitud:', error);
         });
-        
+
     }
 
     leerNfcNuevaUpdate(rut_usuario){
@@ -334,7 +339,7 @@ class Administrador {
         .then(data => {
             // Handle the response from the server if needed
             if (data === 1) {
-                $('#modalLeyendoNFC').modal('show');
+                //$('#modalLeyendoNFC').modal('show');
                 const formData ={
                     funcion: "leerNfcAdministrador",
                     rut_usuario : rut_usuario
@@ -352,28 +357,32 @@ class Administrador {
                     if (data == 1) {
                                 // Obtén el elemento por su ID
                                 var mensajeNFCElemento = document.getElementById("MensajeNFC");
-
+                                //alertify.success('NFC ingresado exitosamente');
                                 // Cambia el texto del elemento
-                                mensajeNFCElemento.textContent = "INSERTE NUEVA NFC";
+                                //mensajeNFCElemento.textContent = "INSERTE NUEVA NFC";
+                                alertify.closeAll();
+                                alertify.alert('INSERTE NUEVA NFC', `<img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`).set('closable', false);
                                 this.leerNfcNueva(rut_usuario);
-                                
-                            } else if(data == 2) {
-                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
-                                mensajeNFCElemento.textContent = "INSERTE NUEVA NFC UPDATE";
-                                this.leerNfcNuevaUpdate(rut_usuario);
-                                // Manejar otros casos (puedes agregar lógica adicional aquí)
-                                
-                            }
 
-})
+                    } else if(data == 2) {
+                        var mensajeNFCElemento = document.getElementById("MensajeNFC");
+                        //mensajeNFCElemento.textContent = "INSERTE NUEVA NFC UPDATE";
+                        alertify.alert('INSERTE NUEVA NFC UPDATE', `<img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`).set('closable', false);
+                        this.leerNfcNuevaUpdate(rut_usuario);
+                        // Manejar otros casos (puedes agregar lógica adicional aquí)
+
+                    }
+
+                })
                 //Respuesta en caso de error
                 .catch(error => {
                        console.error('Error en la solicitud:', error);
                 });
-                
+
             } else {
                 // Manejar otros casos (puedes agregar lógica adicional aquí)
                 console.error('Error en el servidor:', data.message);
+                mostrarNotificacion(`Error en el servidor: ${data.message}`, data.status);
             }
         })
         //Respuesta en caso de error
@@ -382,8 +391,8 @@ class Administrador {
         });
     }
 
-    
-    
+
+
 
     RecuperarUsuario(rut_usuarioEliminado){
         //Prepara datos
@@ -471,6 +480,25 @@ class Administrador {
             }
         })
     }
+    logoutAdministrador(){
+        fetch('/MVC/Controller/PHP/logoutDeSesion.php',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                window.location.href = '/MVC/View/LoginAdministrador.html';
+            } else {
+                console.error('Error:', result.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
 }
 
 function crearTabla(datos) {
@@ -488,7 +516,6 @@ function crearTabla(datos) {
             var nuevaCelda = nuevaFila.insertCell();
             nuevaCelda.textContent = fila[prop];
         }
-
         //Boton 1
         // Agregar una celda (preparar NFC) con un botón y asociar el RUT del usuario
         var nuevaCeldapreparaNFC = nuevaFila.insertCell();
@@ -499,7 +526,9 @@ function crearTabla(datos) {
         preparaNFC.dataset.rutUsuario = fila.rut_usuario;
         preparaNFC.addEventListener('click', function () {
             var objpreparaNFC = new Administrador();
+            alertify.alert('INSERTE NFC ADMINISTRADOR', `<img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`).set('closable', false);
             objpreparaNFC.preparaNFC(rut_usuario);
+            //alertify.alert('INSERTE NFC ADMINISTRADOR', gifElement, function(){ objpreparaNFC.preparaNFC(rut_usuario); }).set('label', 'Cerrar');
         });
         nuevaCeldapreparaNFC.appendChild(preparaNFC);
 
@@ -513,6 +542,7 @@ function crearTabla(datos) {
         preparaNFCUpdate.dataset.rutUsuario = fila.rut_usuario;
         preparaNFCUpdate.addEventListener('click', function () {
             var objpreparaNFCUpdate = new Administrador();
+            alertify.alert('INSERTE NFC ADMINISTRADOR', `<img src="${'../../Assets/images/spinner.gif'}" alt="Cargando...">`).set('closable', false);
             objpreparaNFCUpdate.preparaNFC(rut_usuario);
         });
         nuevaCeldapreparaNFCUpdate.appendChild(preparaNFCUpdate);
@@ -543,7 +573,12 @@ function crearTabla(datos) {
             // Acción al hacer clic en el botón 2
             event.preventDefault();
             var objBorrarUsuario = new Administrador();
-            objBorrarUsuario.borrarUsuario(rut_usuario);
+            alertify.confirm('Confirmación', '¿Estas seguro de que quieres borrar este Usuario?',
+                function(){
+                    objBorrarUsuario.borrarUsuario(rut_usuario);
+                },
+                function(){}
+            );
         });
         nuevaCeldaBorrar.appendChild(Borrar);
     });
@@ -582,4 +617,6 @@ function crearTablaEliminados(datos) {
         nuevaCeldaRecuperarUsuario.appendChild(RecuperarUsuario);
     });
 }
-
+function mostrarNotificacion(mensaje, tipo) {
+    alertify.notify(mensaje, tipo, 5);
+}
