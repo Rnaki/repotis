@@ -24,7 +24,7 @@ class Administrador {
             pagina_actual: self.paginaActual
         };
         //Envio de datos
-        fetch('../Controller/PHP/registrarDatos.php', {
+        fetch('../Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ class Administrador {
             pagina_actual: self.paginaActual
         };
         //Envio de datos
-        fetch('../Controller/PHP/registrarDatos.php', {
+        fetch('../Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -87,30 +87,22 @@ class Administrador {
     
         console.log(formData);
     
-        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+        fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(formData)
         })
-        .then(response => {
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                return response.text();
-            } else {
-                throw new Error('La respuesta no tiene formato JSON');
-            }
-        })
+        .then(response => response.json())
         .then(data => {
             try {
-                const jsonData = JSON.parse(data);
-                console.log(jsonData);
+                console.log(data)
     
-                if (jsonData.success === 1) {
-                    document.getElementById('modalRutUsuario').value = jsonData.rut_usuario;
-                    document.getElementById('modalNombreUsuario').value = jsonData.nombre_usuario;
-                    document.getElementById('modalApellidoUsuario').value = jsonData.apellido_usuario;
+                if (data.success == 1) {
+                    document.getElementById('modalRutUsuario').value = data.rut_usuario;
+                    document.getElementById('modalNombreUsuario').value = data.nombre_usuario;
+                    document.getElementById('modalApellidoUsuario').value = data.apellido_usuario;
     
                     // Muestra el modal
                     $('#modalUpdateDatos').modal('show');
@@ -140,7 +132,7 @@ class Administrador {
          };
          console.log(formData);
          // Envia Datos
-         fetch('/MVC/Controller/PHP/registrarDatos.php', {
+         fetch('/MVC/Controller/PHP/controlador.php', {
              method: 'POST',
              headers: {
                  'Content-Type': 'application/json'
@@ -167,14 +159,14 @@ class Administrador {
      }
  
 
-    registrarDatos() {
-        // Prepara Datos
+     registrarDatos() {
+        // Prepare data
         const rut_usuario = document.getElementById('rutUsuario').value;
         const nombre_usuario = document.getElementById('nombreUsuario').value;
         const apellido_usuario = document.getElementById('apellidoUsuario').value;
         const password_usuario = document.getElementById('passwordUsuario').value;
         const confirmacion_password_usuario = document.getElementById('confirmacionPasswordUsuario').value;
-
+    
         const formData = {
             funcion: "registrarDatos",
             rut_usuario: rut_usuario,
@@ -183,28 +175,31 @@ class Administrador {
             password_usuario: password_usuario,
             confirmacion_password_usuario: confirmacion_password_usuario
         };
-        console.log(formData);
-        // Envia Datos
-        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+    
+        // Send data
+        fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(formData)
         })
-        // Recibe Respuesta
-        .then(response => response.json())
+        .then(response => {
+            console.log(response); // Log the response to the console
+            return response.json(); // Parse the response as JSON
+        })
         .then(data => {
+            console.log("hola");
             console.log(data);
-            if (data === 1) {
-                // Redirigir a la página deseada
+            if (data.success === 1) {
+                // Redirect to the desired page
                 window.location.href = '/MVC/View/administrador.html';
             } else {
-                // Manejar otros casos (puedes agregar lógica adicional aquí)
-                console.error('Error en el servidor:', data.message);
+                // Handle other cases (you can add additional logic here)
+                console.error('Error on the server:', data.message);
             }
         })
-        //Respuesta en caso de error
+        // Handle errors
         .catch(error => {
             console.error('Error:', error);
         });
@@ -220,7 +215,7 @@ class Administrador {
         }
         console.log(formData);
         //Envia Datos
-        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+        fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -393,7 +388,7 @@ class Administrador {
         }
         console.log(formData);
         //Envia Datos
-        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+        fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -432,7 +427,7 @@ class Administrador {
             passwordAdministrador: passwordAdministrador
         };
         //Envia Datos
-        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+        fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -73,6 +73,10 @@ class NFCProcessor {
                 } catch (PDOException $e) {
                     echo "Error: " . $e->getMessage();
                 }
+            }else if($action == 'Login'){
+                echo $action;
+            }else if($action == 'NotLogin') {
+                echo 'NO ESTAS REGISTRADO NO PUEDES Logear';
             }
             
             } catch (PDOException $e) {

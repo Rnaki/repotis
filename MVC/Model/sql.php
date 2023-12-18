@@ -52,8 +52,7 @@ function sqlUpdateDatos(){
 
 function buscarNfc($nfc) {
     try {
-        $sqlSelect = "SELECT 
-        COALESCE(
+        $sqlSelect = "SELECT COALESCE(
             (SELECT CONCAT('Create:', a.nfc_administrador) 
             FROM Usuario u
             JOIN administrador a ON u.rut_administrador = a.rut_administrador
@@ -63,7 +62,7 @@ function buscarNfc($nfc) {
                 AND u.eliminado = 0
             LIMIT 1),
             
-            (SELECT CONCAT('Update:', a.nfc_administrador)
+            (SELECT CONCAT('Update:', a.nfc_administrador,':',u.codigo_nfc_usuario)
             FROM Usuario u
             JOIN administrador a ON u.rut_administrador = a.rut_administrador
             WHERE u.prepara_nfc = 1
@@ -72,7 +71,7 @@ function buscarNfc($nfc) {
                 AND u.eliminado = 0
             LIMIT 1),
             
-            (SELECT 'Login1:' 
+            (SELECT 'Login:' 
             FROM Usuario u
             JOIN administrador a ON u.rut_administrador = a.rut_administrador
             WHERE u.prepara_nfc = 0
@@ -81,7 +80,7 @@ function buscarNfc($nfc) {
                 AND u.eliminado = 0
             LIMIT 1),
             
-            (SELECT 'Login2:' 
+            (SELECT 'Login:' 
             FROM Usuario u
             JOIN administrador a ON u.rut_administrador = a.rut_administrador
             WHERE u.prepara_nfc = 0
@@ -90,15 +89,17 @@ function buscarNfc($nfc) {
                 AND u.eliminado = 0
             LIMIT 1),
             
-            (SELECT 'Login3:' 
+            (SELECT 'Login:' 
             FROM Usuario u
             JOIN administrador a ON u.rut_administrador = a.rut_administrador
             WHERE u.prepara_nfc = 1
                 AND a.nfc_administrador != :nfc
                 AND u.codigo_nfc_usuario = :nfc
                 AND u.eliminado = 0
-            LIMIT 1)
-        ) as resultado;";
+            LIMIT 1),
+            
+            'NotLogin:'
+        ) AS resultado;";
     return $sqlSelect;
     } catch (Exception $e) {
         // Manejar cualquier error que pueda ocurrir al leer el archivo
@@ -309,7 +310,7 @@ function recuperarUsuarioEliminadoSql() {
     }
 }
 
-function registrarDatos(){
+function sqlregistrarDatos(){
     try {
         $registrarDatos = "INSERT into Usuario (rut_usuario,
                                                 nombre_usuario,

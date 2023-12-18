@@ -1,5 +1,4 @@
 <?php
-    require_once '../../Model/registrarDatos.php';
     require_once '../../Model/sql.php';
     include '../../Model/conexion.php';
     header("Access-Control-Allow-Origin: *");
@@ -159,11 +158,6 @@ class Administrador {
         $response = ['status' => 'success', 'message' => 'Registro exitoso'];
     }
 
-    public function procesarRegistroNfc() {
-    $this->tempData = [];
-    $response = ['status' => 'success', 'message' => 'Datos insertados en la base de datos'];
-    echo json_encode($response);
-    }
 
     //funcion que elimina el usuario seteando el valor de la columna en 0
     public function borrarUsuario($data) {
@@ -357,7 +351,7 @@ class Administrador {
                    break;
                 }
     
-                sleep(1);
+                sleep(3);
                 $time++;
             }
     
