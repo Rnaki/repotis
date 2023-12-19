@@ -250,7 +250,7 @@ class Administrador {
             funcion: "leerNfcNueva",
             rut_usuario : rut_usuario
         }
-        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+        fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -282,7 +282,7 @@ class Administrador {
             funcion: "leerNfcNuevaUpdate",
             rut_usuario : rut_usuario
         }
-        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+        fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -317,7 +317,7 @@ class Administrador {
         }
         console.log(formData);
         //Envia Datos
-        fetch('/MVC/Controller/PHP/registrarDatos.php', {
+        fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -334,7 +334,7 @@ class Administrador {
                     funcion: "leerNfcAdministrador",
                     rut_usuario : rut_usuario
                 }
-                fetch('/MVC/Controller/PHP/registrarDatos.php', {
+                fetch('/MVC/Controller/PHP/controlador.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
