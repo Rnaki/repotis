@@ -4,13 +4,17 @@ ini_set('display_errors', '1');
 include '../../Model/conexion.php';
 require_once '../../Model/sql.php';
 class NFCProcessor {
+    private $conexion;
     private $action;
+    private $sentenciasSQLManager;
 
     public function __construct() {
-        // Inicializamos la acción por defecto como 'lecturaNFC'
+        $this->conexion = Connection::obtenerInstancia()->obtenerConexion();
         $this->action = 'lecturaNFC';
+        $this->sentenciasSQLManager = new SentenciasSQLManager();
+        
     }
-
+    
     public function processRequest() {
         // Comprobamos la acción actual y ejecutamos la lógica correspondiente
         switch ($this->action) {
@@ -24,16 +28,16 @@ class NFCProcessor {
                 $this->respondError('Acción no válida');
         }
     }
+    
     private function handleLecturaNFC() {
         $postData = file_get_contents('php://input');
         $decodedData = json_decode($postData, true);
-        $conexion = establishConnection();
     
         // Verificar si solo hay datos NFC y no hay reconocimiento facial
         if (isset($decodedData["nfc"]) && $decodedData["nfc"] !== null) {
                 $valor1 = $decodedData["nfc"]; // Ajusta según tu implementación
-                $sql = buscarNfc($valor1); // Ajusta esto según tu implementación
-                $stmt = $conexion->prepare($sql);
+                $sql = $this->sentenciasSQLManager->buscarNfc($valor1); // Ajusta esto según tu implementación
+                $stmt = $this->conexion->prepare($sql);
                 
                 $stmt->bindParam(':nfc', $valor1, PDO::PARAM_STR);
                 
@@ -49,8 +53,8 @@ class NFCProcessor {
             if($action == 'Create'){
                 session_start();
                 $_SESSION["nfc_administrador"] = $nfc_administrador;
-                $sql2 = administradorCreaNfc();
-                $stmt2 = $conexion->prepare($sql2);
+                $sql2 = $this->sentenciasSQLManager->administradorCreaNfc();
+                $stmt2 = $this->conexion->prepare($sql2);
                 $stmt2->bindParam(':nfcAdmin', $_SESSION["nfc_administrador"], PDO::PARAM_STR);
                 try {
                     $stmt2->execute();
@@ -63,8 +67,8 @@ class NFCProcessor {
             }else if($action == 'Update'){
                 session_start();
                 $_SESSION["nfc_administrador"] = $nfc_administrador;
-                $sql3 = administradorUpdateNfc();
-                $stmt3 = $conexion->prepare($sql3);
+                $sql3 = $this->sentenciasSQLManager->administradorUpdateNfc();
+                $stmt3 = $this->conexion->prepare($sql3);
                 $stmt3->bindParam(':nfcAdmin', $_SESSION["nfc_administrador"], PDO::PARAM_STR);
                 try {
                     $stmt3->execute();
@@ -87,9 +91,9 @@ class NFCProcessor {
         elseif (isset($decodedData["nfcCreate"]) && $decodedData["nfcCreate"] !== null) {
             $nfcNewUser = $decodedData["nfcCreate"];
             $nfc_administrador = $decodedData["nfcAdmin"];
-            $sql3 = createUserNfc();
+            $sql3 = $this->sentenciasSQLManager->createUserNfc();
 
-            $stmt3 = $conexion->prepare($sql3);
+            $stmt3 = $this->conexion->prepare($sql3);
             $stmt3->bindParam(':nfcNewUser', $nfcNewUser, PDO::PARAM_STR);
             $stmt3->bindParam(':nfc_administrador', $nfc_administrador, PDO::PARAM_STR);
         
@@ -106,9 +110,9 @@ class NFCProcessor {
             $nfcUpdateUser = $decodedData["nfcUpdate"];
             $nfc_administrador = $decodedData["nfcAdmin"];
             echo $new_time_update = date("Y-m-d H:i:s");
-            $sql3 = UpdateUserNfc();
+            $sql3 = $this->sentenciasSQLManager->UpdateUserNfc();
         
-            $stmt3 = $conexion->prepare($sql3);
+            $stmt3 = $this->conexion->prepare($sql3);
             $stmt3->bindParam(':nfcUpdateUser', $nfcUpdateUser, PDO::PARAM_STR);
             $stmt3->bindParam(':nfc_administrador', $nfc_administrador, PDO::PARAM_STR);
             $stmt3->bindParam(':new_time_update', $new_time_update, PDO::PARAM_STR);

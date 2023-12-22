@@ -6,12 +6,15 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 class AdministradorModel {
-    private $conexion;
     private $datos;
+    private $conexion;
+    private $sentenciasSQLManager;
 
     public function __construct() {
         $this->conexion = Connection::obtenerInstancia()->obtenerConexion();
+        $this->sentenciasSQLManager = new SentenciasSQLManager();
     }
+
 
 
     public function verDatos($data) {
@@ -20,7 +23,7 @@ class AdministradorModel {
                 $filas = 10;
                 $pagina_actual = $data['pagina_actual'];
                 $datos_pagina = ($pagina_actual - 1) * $filas;
-                $sql = obtenerSentenciaSQL(); // Ajusta esto según tu implementación
+                $sql = $this->sentenciasSQLManager->verDatos(); // Ajusta esto según tu implementación
                 $stmt = $this->conexion->prepare($sql);
 
                 if ($stmt) {
@@ -61,7 +64,7 @@ class AdministradorModel {
                 $filas = 10;
                 $pagina_actual = $data['pagina_actual'];
                 $datos_pagina = ($pagina_actual - 1) * $filas;
-                $sql = obtenerdatosEliminados(); // Ajusta esto según tu implementación
+                $sql = $this->sentenciasSQLManager->obtenerdatosEliminados(); // Ajusta esto según tu implementación
                 $stmt = $this->conexion->prepare($sql);
     
                 if ($stmt) {
@@ -97,7 +100,7 @@ class AdministradorModel {
     }
 
     public function mostrarUpdateDatos($data) {
-        $sql = mostrarUpdateDatos(); // Asegúrate de tener la consulta SQL correcta
+        $sql = $this->sentenciasSQLManager->mostrarUpdateDatos(); // Asegúrate de tener la consulta SQL correcta
         $stmt = $this->conexion->prepare($sql);
         $rut_usuario = $data["rut_usuario"];
     
@@ -125,7 +128,7 @@ class AdministradorModel {
     // Otros métodos del modelo
 
     public function updateDatos($data){
-        $sql = sqlUpdateDatos(); // Asegúrate de tener la consulta SQL correcta
+        $sql = $this->sentenciasSQLManager->sqlUpdateDatos(); // Asegúrate de tener la consulta SQL correcta
         $stmt = $this->conexion->prepare($sql);
         $rut_usuario = $data["rut_usuario"];
         $nombre_usuario = $data["nombre_usuario"];
@@ -143,7 +146,7 @@ class AdministradorModel {
             }
         }
     public function registrarDatos($data) {
-        $sql = sqlregistrarDatos();
+        $sql = $this->sentenciasSQLManager->sqlregistrarDatos();
         $stmt = $this->conexion->prepare($sql);
         $rut_usuario = $data["rut_usuario"];
         $nombre_usuario = $data["nombre_usuario"];
@@ -168,7 +171,7 @@ class AdministradorModel {
 
     //funcion que elimina el usuario seteando el valor de la columna en 0
     public function borrarUsuario($data) {
-        $sql = borrarUsuarioSQL();
+        $sql = $this->sentenciasSQLManager->borrarUsuarioSQL();
         $stmt = $this->conexion->prepare($sql);
         if ($stmt) {
             $rut_usuario = $data["rut_usuario"];
@@ -184,7 +187,7 @@ class AdministradorModel {
     }
 
     public function recuperarUsuarioEliminado($data) {
-        $sql = recuperarUsuarioEliminadoSql();
+        $sql = $this->sentenciasSQLManager->recuperarUsuarioEliminadoSql();
         $stmt = $this->conexion->prepare($sql);
         if ($stmt) {
             $rut_usuario = $data["rut_usuarioEliminado"];
@@ -201,7 +204,7 @@ class AdministradorModel {
 
     //Funcion de login del Administrador
     public function loginAdministrador($data){
-        $sql = loginAdministrador();
+        $sql = $this->sentenciasSQLManager->loginAdministrador();
         $stmt = $this->conexion->prepare($sql);
         $rutAdministrador = $data["rutAdministrador"];
         $passwordAdministrador = $data["passwordAdministrador"];
@@ -226,8 +229,8 @@ class AdministradorModel {
             $rut_administrador = isset($_SESSION['rut']) ? $_SESSION['rut'] : null;
     
             $rut_usuario = $data["rut_usuario"];
-            $sql = preparaNFC();
-            $sql2 = ControladorLogin(); 
+            $sql = $this->sentenciasSQLManager->preparaNFC();
+            $sql2 = $this->sentenciasSQLManager->ControladorLogin(); 
             try {
                 $this->conexion->beginTransaction();
                 $stmt = $this->conexion->prepare($sql);
@@ -245,7 +248,7 @@ class AdministradorModel {
         }
 
         public function leerNfcAdministrador($data) {
-            $sql = leerNfcAdm();  // Asegúrate de tener esta función definida
+            $sql = $this->sentenciasSQLManager->leerNfcAdm();  // Asegúrate de tener esta función definida
         
             $stmt = $this->conexion->prepare($sql);
             $rut_usuario = $data["rut_usuario"];
@@ -263,13 +266,15 @@ class AdministradorModel {
                         echo $result['resultado'];
                         break;
                     }else if ($result['resultado'] == 2){
+                        $bell = $result['resultado'];
                         echo $result['resultado'];
                         break;
-                    }else{
-                        echo $result['resultado'];
                     }
                     sleep(1);
                     $time++;
+                }
+                if ($bell != 1 && $bell != 2){
+                    echo 0;
                 }
                 // Si el bucle termina sin encontrar un resultado, imprime 0
                 
@@ -279,13 +284,13 @@ class AdministradorModel {
         }
 
         public function leerNfcNueva($data){
-            $sql2 = leerNfcNuevaIngresada();  // Make sure this function is defined
+            $sql = $this->sentenciasSQLManager->leerNfcNuevaIngresada();  // Make sure this function is defined
             $rut_usuario = $data["rut_usuario"];
             $time = 0;
             $bell = 0; // Initialize the variable
             $resultValue = 0; // Initialize a variable to store the result
         
-            $stmt = $this->conexion->prepare($sql2);
+            $stmt = $this->conexion->prepare($sql);
         
             try {
                 while ($time <= 30) {
@@ -318,7 +323,7 @@ class AdministradorModel {
 
         public function leerNfcNuevaUpdate($data){
             session_start();
-            $sql0 = obtenerTimeNfc();
+            $sql0 = $this->sentenciasSQLManager->obtenerTimeNfc();
             $rut_usuario = $data["rut_usuario"];
             $rut_administrador = $_SESSION["rut"];
             $stmt0 = $this->conexion->prepare($sql0);
@@ -328,7 +333,7 @@ class AdministradorModel {
             $result0 = $stmt0->fetch(PDO::FETCH_ASSOC);
             $recorded_time = $result0['updated_at_usuario'];
             
-            $sql1 = leerNfcNuevaIngresadaUpdate();  // Make sure this function is defined
+            $sql1 = $this->sentenciasSQLManager->leerNfcNuevaIngresadaUpdate();  // Make sure this function is defined
         
             $rut_usuario = $data["rut_usuario"];
             $time = 0;

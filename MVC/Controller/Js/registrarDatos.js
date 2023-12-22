@@ -310,6 +310,8 @@ class Administrador {
 
 
     preparaNFC(rut_usuario){
+        var mensajeNFCElemento = document.getElementById("MensajeNFC");
+            mensajeNFCElemento.textContent = "INGRESE NFC ADMIN";
         //Prepara Datos
         const formData ={
             funcion: "preparaNFC",
@@ -354,10 +356,94 @@ class Administrador {
                                 
                             } else if(data == 2) {
                                 var mensajeNFCElemento = document.getElementById("MensajeNFC");
-                                mensajeNFCElemento.textContent = "INSERTE NUEVA NFC UPDATE";
-                                this.leerNfcNuevaUpdate(rut_usuario);
-                                // Manejar otros casos (puedes agregar lógica adicional aquí)
+                                mensajeNFCElemento.textContent = "EL USUARIO YA TIENE NFC";
+                                setTimeout(function() {
+                                    // Code to be executed after the delay
+                                    $('#modalLeyendoNFC').modal('hide');
+                                }, 5000);
+                            }else if(data ==0){
+                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
+                                mensajeNFCElemento.textContent = "TIEMPO DE ESPERA AGOTADO";
+                                setTimeout(function() {
+                                    // Code to be executed after the delay
+                                    $('#modalLeyendoNFC').modal('hide');
+                                }, 5000);
+                            }
+
+})
+                //Respuesta en caso de error
+                .catch(error => {
+                       console.error('Error en la solicitud:', error);
+                });
+                
+            } else {
+                // Manejar otros casos (puedes agregar lógica adicional aquí)
+                console.error('Error en el servidor:', data.message);
+            }
+        })
+        //Respuesta en caso de error
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
+        });
+    }
+
+    preparaNFCUpdate(rut_usuario){
+        var mensajeNFCElemento = document.getElementById("MensajeNFC");
+            mensajeNFCElemento.textContent = "INGRESE NFC ADMIN PARA UPDATE";
+        //Prepara Datos
+        const formData ={
+            funcion: "preparaNFC",
+            rut_usuario : rut_usuario
+        }
+        console.log(formData);
+        //Envia Datos
+        fetch('/MVC/Controller/PHP/controlador.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        //Recibe Respuesta
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server if needed
+            if (data === 1) {
+                $('#modalLeyendoNFC').modal('show');
+                const formData ={
+                    funcion: "leerNfcAdministrador",
+                    rut_usuario : rut_usuario
+                }
+                fetch('/MVC/Controller/PHP/controlador.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log('Raw Response:', data);
+                    if (data == 1) {
+                                // Obtén el elemento por su ID
+                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
+
+                                // Cambia el texto del elemento
+                                mensajeNFCElemento.textContent = "EL USUARIO NO TIENE NFC";
+                                setTimeout(5000);
+                                $('#modalLeyendoNFC').modal('hide');
                                 
+                            } else if(data == 2) {
+                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
+                                mensajeNFCElemento.textContent = "INSERTE LA NUEVA NFC PARA EL UPDATE";
+                                this.leerNfcNuevaUpdate(rut_usuario)
+                            }else if(data ==0){
+                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
+                                mensajeNFCElemento.textContent = "TIEMPO DE ESPERA AGOTADO";
+                                setTimeout(function() {
+                                    // Code to be executed after the delay
+                                    $('#modalLeyendoNFC').modal('hide');
+                                }, 5000);
                             }
 
 })
@@ -508,7 +594,7 @@ function crearTabla(datos) {
         preparaNFCUpdate.dataset.rutUsuario = fila.rut_usuario;
         preparaNFCUpdate.addEventListener('click', function () {
             var objpreparaNFCUpdate = new Administrador();
-            objpreparaNFCUpdate.preparaNFC(rut_usuario);
+            objpreparaNFCUpdate.preparaNFCUpdate(rut_usuario);
         });
         nuevaCeldapreparaNFCUpdate.appendChild(preparaNFCUpdate);
 

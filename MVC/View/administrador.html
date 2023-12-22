@@ -116,21 +116,22 @@
 </div>
 
 <!-- Modal -->
-<div class="modal" id="modalLeyendoNFC" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 id="MensajeNFC" class="modal-title">INSERTE NFC ADMINISTRADOR</h5>
-          </div>
-          <div class="modal-body">
-            <img src="../../Assets/images/spinner.gif" alt="Cargando...">
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-          </div>
-      </div>
-  </div>
+<div class="modal" id="modalLeyendoNFC" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="MensajeNFC" class="modal-title">INSERTE NFC ADMINISTRADOR</h5>
+            </div>
+            <div class="modal-body">
+                <img src="../../Assets/images/spinner.gif" alt="Cargando...">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
 </div>
+
 </body>
 <script src="../../Assets/vendor/jquery/jquery-3.2.1.min.js"></script>
 <script src="../../MVC/Controller/Js/registrarDatos.js"></script>
@@ -146,7 +147,6 @@
       document.getElementById('tabla2').classList.add('show', 'active');
   });
 </script>
-
 <!--===============================================================================================-->	
 <script src="../../Assets/vendor/jquery/jquery-3.2.1.min.js"></script>
 <!--===============================================================================================-->
