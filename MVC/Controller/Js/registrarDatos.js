@@ -44,6 +44,7 @@ class Administrador {
         .catch(error => {
             console.error('Disculpe, existió un problema:', error);
         });
+        
 
     }
 
@@ -190,11 +191,14 @@ class Administrador {
         })
         .then(data => {
             console.log("hola");
-            console.log(data);
+            console.log(data.error);
             if (data.success === 1) {
                 // Redirect to the desired page
                 window.location.href = '/MVC/View/administrador.html';
-            } else {
+            } else if (data.error === 2){
+                console.log("usuario ya registrado")
+             
+            }else {
                 // Handle other cases (you can add additional logic here)
                 console.error('Error on the server:', data.message);
             }
@@ -250,6 +254,7 @@ class Administrador {
             funcion: "leerNfcNueva",
             rut_usuario : rut_usuario
         }
+        const url = `/MVC/Controller/PHP/controlador.php?${Math.random()}`;
         fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
@@ -282,6 +287,7 @@ class Administrador {
             funcion: "leerNfcNuevaUpdate",
             rut_usuario : rut_usuario
         }
+        
         fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
@@ -296,85 +302,7 @@ class Administrador {
             if (data === 1) {
                 // Obtén el elemento por su ID
                 $('#modalLeyendoNFC').modal('hide');
-                this.verDatos();
-            } else {
-                // Manejar otros casos (puedes agregar lógica adicional aquí)
-                console.error('Error en el servidor:', data.message);
-            }
-        })
-        //Respuesta en caso de error
-        .catch(error => {
-            console.error('Error en la solicitud:', error);
-        });
-    }
-
-
-    preparaNFC(rut_usuario){
-        var mensajeNFCElemento = document.getElementById("MensajeNFC");
-            mensajeNFCElemento.textContent = "INGRESE NFC ADMIN";
-        //Prepara Datos
-        const formData ={
-            funcion: "preparaNFC",
-            rut_usuario : rut_usuario
-        }
-        console.log(formData);
-        //Envia Datos
-        fetch('/MVC/Controller/PHP/controlador.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
-        //Recibe Respuesta
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response from the server if needed
-            if (data === 1) {
-                $('#modalLeyendoNFC').modal('show');
-                const formData ={
-                    funcion: "leerNfcAdministrador",
-                    rut_usuario : rut_usuario
-                }
-                fetch('/MVC/Controller/PHP/controlador.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => response.text())
-                .then(data => {
-                    console.log('Raw Response:', data);
-                    if (data == 1) {
-                                // Obtén el elemento por su ID
-                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
-
-                                // Cambia el texto del elemento
-                                mensajeNFCElemento.textContent = "INSERTE NUEVA NFC";
-                                this.leerNfcNueva(rut_usuario);
-                                
-                            } else if(data == 2) {
-                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
-                                mensajeNFCElemento.textContent = "EL USUARIO YA TIENE NFC";
-                                setTimeout(function() {
-                                    // Code to be executed after the delay
-                                    $('#modalLeyendoNFC').modal('hide');
-                                }, 5000);
-                            }else if(data ==0){
-                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
-                                mensajeNFCElemento.textContent = "TIEMPO DE ESPERA AGOTADO";
-                                setTimeout(function() {
-                                    // Code to be executed after the delay
-                                    $('#modalLeyendoNFC').modal('hide');
-                                }, 5000);
-                            }
-
-})
-                //Respuesta en caso de error
-                .catch(error => {
-                       console.error('Error en la solicitud:', error);
-                });
+                    this.verDatos();
                 
             } else {
                 // Manejar otros casos (puedes agregar lógica adicional aquí)
@@ -385,84 +313,166 @@ class Administrador {
         .catch(error => {
             console.error('Error en la solicitud:', error);
         });
+
+        
     }
 
-    preparaNFCUpdate(rut_usuario){
+
+    preparaNFC(rut_usuario) {
         var mensajeNFCElemento = document.getElementById("MensajeNFC");
-            mensajeNFCElemento.textContent = "INGRESE NFC ADMIN PARA UPDATE";
-        //Prepara Datos
-        const formData ={
+        mensajeNFCElemento.textContent = "INGRESE NFC ADMIN";
+    
+        const abortController = new AbortController();
+    
+        const formData = {
             funcion: "preparaNFC",
-            rut_usuario : rut_usuario
-        }
-        console.log(formData);
-        //Envia Datos
+            rut_usuario: rut_usuario
+        };
+    
         fetch('/MVC/Controller/PHP/controlador.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(formData),
+            signal: abortController.signal
         })
-        //Recibe Respuesta
         .then(response => response.json())
         .then(data => {
-            // Handle the response from the server if needed
             if (data === 1) {
                 $('#modalLeyendoNFC').modal('show');
-                const formData ={
+                const formData = {
                     funcion: "leerNfcAdministrador",
-                    rut_usuario : rut_usuario
-                }
-                fetch('/MVC/Controller/PHP/controlador.php', {
+                    rut_usuario: rut_usuario
+                };
+    
+                const nfcRequest = fetch('/MVC/Controller/PHP/controlador.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => response.text())
-                .then(data => {
-                    console.log('Raw Response:', data);
-                    if (data == 1) {
-                                // Obtén el elemento por su ID
-                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
-
-                                // Cambia el texto del elemento
-                                mensajeNFCElemento.textContent = "EL USUARIO NO TIENE NFC";
-                                setTimeout(5000);
-                                $('#modalLeyendoNFC').modal('hide');
-                                
-                            } else if(data == 2) {
-                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
-                                mensajeNFCElemento.textContent = "INSERTE LA NUEVA NFC PARA EL UPDATE";
-                                this.leerNfcNuevaUpdate(rut_usuario)
-                            }else if(data ==0){
-                                var mensajeNFCElemento = document.getElementById("MensajeNFC");
-                                mensajeNFCElemento.textContent = "TIEMPO DE ESPERA AGOTADO";
-                                setTimeout(function() {
-                                    // Code to be executed after the delay
-                                    $('#modalLeyendoNFC').modal('hide');
-                                }, 5000);
-                            }
-
-})
-                //Respuesta en caso de error
-                .catch(error => {
-                       console.error('Error en la solicitud:', error);
+                    body: JSON.stringify(formData),
+                    signal: abortController.signal
                 });
-                
+    
+                return nfcRequest;
             } else {
-                // Manejar otros casos (puedes agregar lógica adicional aquí)
-                console.error('Error en el servidor:', data.message);
+                console.error('Error in server response:', data.message);
+                throw new Error('Server response indicates an error');
             }
         })
-        //Respuesta en caso de error
+        .then(response => response.text())
+        .then(data => {
+            console.log('Raw Response:', data);
+            if (data == 1) {
+                mensajeNFCElemento.textContent = "INSERTE NUEVA NFC";
+                this.leerNfcNueva(rut_usuario);
+            } else if (data == 2) {
+                mensajeNFCElemento.textContent = "EL USUARIO YA TIENE NFC";
+                setTimeout(function () {
+                    $('#modalLeyendoNFC').modal('hide');
+                }, 5000);
+            } else if (data == 0) {
+                mensajeNFCElemento.textContent = "TIEMPO DE ESPERA AGOTADO";
+                setTimeout(function () {
+                    $('#modalLeyendoNFC').modal('hide');
+                }, 5000);
+            }
+        })
         .catch(error => {
-            console.error('Error en la solicitud:', error);
+            if (error.name === 'AbortError') {
+                console.log('Fetch aborted');
+            } else {
+                console.error('Error in the request:', error);
+            }
+        });
+        
+        // Event listener for the cancel button
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            abortController.abort();
+            mensajeNFCElemento.textContent = "NFC preparation canceled";
+            // You might want to hide any modals or perform other cleanup here
         });
     }
+    preparaNFCUpdate(rut_usuario) {
+        var mensajeNFCElemento = document.getElementById("MensajeNFC");
+        mensajeNFCElemento.textContent = "INGRESE NFC ADMIN PARA UPDATE";
+    
+        const abortController = new AbortController();
+    
+        const formData = {
+            funcion: "preparaNFC",
+            rut_usuario: rut_usuario
+        };
+    
+        fetch('/MVC/Controller/PHP/controlador.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData),
+            signal: abortController.signal
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data === 1) {
+                $('#modalLeyendoNFC').modal('show');
+                const formData = {
+                    funcion: "leerNfcAdministrador",
+                    rut_usuario: rut_usuario
+                };
+    
+                const nfcRequest = fetch('/MVC/Controller/PHP/controlador.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData),
+                    signal: abortController.signal
+                });
+    
+                return nfcRequest;
+            } else {
+                console.error('Error in server response:', data.message);
+                throw new Error('Server response indicates an error');
+            }
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log('Raw Response:', data);
+            if (data == 1) {
+                mensajeNFCElemento.textContent = "EL USUARIO NO TIENE NFC";
+                setTimeout(() => {
+                    $('#modalLeyendoNFC').modal('hide');
+                }, 5000);
+            } else if (data == 2) {
+                mensajeNFCElemento.textContent = "INSERTE LA NUEVA NFC PARA EL UPDATE";
+                this.leerNfcNuevaUpdate(rut_usuario);
+            } else if (data == 0) {
+                mensajeNFCElemento.textContent = "TIEMPO DE ESPERA AGOTADO";
+                setTimeout(() => {
+                    $('#modalLeyendoNFC').modal('hide');
+                }, 5000);
+            }
+        })
+        .catch(error => {
+            if (error.name === 'AbortError') {
+                console.log('Fetch aborted');
+            } else {
+                console.error('Error in the request:', error);
+                mensajeNFCElemento.textContent = "ERROR EN LA SOLICITUD";
+            }
+        });
 
+    
+        // Event listener for the cancel button
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            abortController.abort();
+            mensajeNFCElemento.textContent = "NFC preparation for update canceled";
+            // You might want to hide any modals or perform other cleanup here
+        }); 
+
+    }
     
     
 

@@ -59,7 +59,10 @@ class NFCProcessor {
                 try {
                     $stmt2->execute();
                     $resultado2 = $stmt2->fetch(PDO::FETCH_ASSOC);
-                    echo $resultado2;
+                    if($resultado2 == 1){
+                        echo $resultado2;
+                    }
+                    
                 } catch (PDOException $e) {
                     echo "Error: " . $e->getMessage();
                 }

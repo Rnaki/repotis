@@ -27,6 +27,6 @@ if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
 } else {
     // Devolver una respuesta de error si los datos no son válidos
     $response = ['status' => 'error', 'message' => 'Datos no válidos'];
-    echo json_encode($response);
+    return json_encode($response);
 }
 ?>

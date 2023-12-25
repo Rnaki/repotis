@@ -139,7 +139,9 @@ class SentenciasSQLManager {
         try {
             $sqlUpdate = "UPDATE Usuario u 
                         JOIN administrador a ON a.rut_administrador = u.rut_administrador 
-                        SET u.codigo_nfc_usuario = :nfcNewUser 
+                        SET u.codigo_nfc_usuario = :nfcNewUser,
+                            u.prepara_nfc = FALSE,
+                            u.admin_prepara_nfc = FALSE 
                         WHERE a.nfc_administrador = :nfc_administrador 
                         AND u.prepara_Nfc = TRUE
                         AND u.admin_prepara_nfc = TRUE";
@@ -182,6 +184,7 @@ class SentenciasSQLManager {
                         JOIN administrador a ON a.rut_administrador = u.rut_administrador 
                         SET u.codigo_nfc_usuario = :nfcUpdateUser,
                             u.updated_at_usuario = :new_time_update
+                            
                         WHERE a.nfc_administrador = :nfc_administrador 
                         AND u.prepara_Nfc = TRUE
                         AND u.admin_prepara_nfc_update = TRUE;";

@@ -146,14 +146,17 @@ class AdministradorModel {
             }
         }
     public function registrarDatos($data) {
-        $sql = $this->sentenciasSQLManager->sqlregistrarDatos();
-        $stmt = $this->conexion->prepare($sql);
-        $rut_usuario = $data["rut_usuario"];
-        $nombre_usuario = $data["nombre_usuario"];
-        $apellido_usuario = $data["apellido_usuario"];
-        $password_usuario = $data["password_usuario"];
-        $confirmacion_password_usuario = $data["confirmacion_password_usuario"];
+        
+
+        $this->conexion->beginTransaction(); 
         try {
+            $sql = $this->sentenciasSQLManager->sqlregistrarDatos();
+            $stmt = $this->conexion->prepare($sql);
+            $rut_usuario = $data["rut_usuario"];
+            $nombre_usuario = $data["nombre_usuario"];
+            $apellido_usuario = $data["apellido_usuario"];
+            $password_usuario = $data["password_usuario"];
+            $confirmacion_password_usuario = $data["confirmacion_password_usuario"];
             $stmt->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
             $stmt->bindParam(':nombre_usuario', $nombre_usuario, PDO::PARAM_STR);
             $stmt->bindParam(':apellido_usuario', $apellido_usuario, PDO::PARAM_STR);
@@ -161,14 +164,23 @@ class AdministradorModel {
             $stmt->bindParam(':confirmacion_password_usuario', $confirmacion_password_usuario, PDO::PARAM_STR);
             $result = $stmt->execute();
     
-            // Return the result as a JSON-encoded string
-            return json_encode(['success' => 1, 'Estado' => 'Ingresado Correctamente']);
-        } catch (PDOException $e) {
-            // Return an error message as a JSON-encoded string
-            return json_encode(['error' => 'Error: ' . $e->getMessage()]);
-        }
-    }
+            $rowCount = $stmt->rowCount();
 
+        if ($rowCount === 0) {
+            // Rollback the transaction in case of duplicate key error
+            $this->conexion->rollBack();
+            return json_encode(['error' => 2, 'Error' => 'Duplicate key violation']);
+        } else {
+            // Commit the transaction on success
+            $this->conexion->commit();
+            return json_encode(['success' => 1, 'Estado' => 'Ingresado Correctamente']);
+        }
+    } catch (PDOException $e) {
+        // Rollback the transaction on any other error
+        $this->conexion->rollBack();
+        return json_encode(['error' => 2, 'motivo: ' . $e->getMessage()]);
+    }
+}
     //funcion que elimina el usuario seteando el valor de la columna en 0
     public function borrarUsuario($data) {
         $sql = $this->sentenciasSQLManager->borrarUsuarioSQL();
@@ -284,6 +296,7 @@ class AdministradorModel {
         }
 
         public function leerNfcNueva($data){
+            
             $sql = $this->sentenciasSQLManager->leerNfcNuevaIngresada();  // Make sure this function is defined
             $rut_usuario = $data["rut_usuario"];
             $time = 0;
@@ -332,40 +345,44 @@ class AdministradorModel {
             $stmt0->execute();
             $result0 = $stmt0->fetch(PDO::FETCH_ASSOC);
             $recorded_time = $result0['updated_at_usuario'];
-            
-            $sql1 = $this->sentenciasSQLManager->leerNfcNuevaIngresadaUpdate();  // Make sure this function is defined
+            $new_time = $recorded_time;
+            // Output the result of the first query
         
-            $rut_usuario = $data["rut_usuario"];
-            $time = 0;
-            $bell = 0; // Initialize the variable
-            $resultValue = 0; // Initialize a variable to store the result
+            $sql1 = $this->sentenciasSQLManager->leerNfcNuevaIngresadaUpdate();
         
             $stmt = $this->conexion->prepare($sql1);
         
+            $time = 0; // Initialize $time
+        
             try {
-                while ($time <= 30 || $recorded_time != $new_time) {
+                while ($time <= 30 && $recorded_time == $new_time) {
                     $stmt->bindParam(':rut_usuario', $rut_usuario, PDO::PARAM_STR);
                     $stmt->bindParam(':rut_administrador', $rut_administrador, PDO::PARAM_STR);
                     $stmt->execute();
-                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                    $new_time = $result['updated_at_usuario'];
-                    // Check the result of the query
-                    if ($recorded_time != $new_time) {
-                       echo 1;
-                       break;
-                    }
-        
-                    sleep(3);
-                    $time++;
-                }
-        
-                // If the loop finishes without finding a result, set the result value to 0
-                // Si el bucle termina sin encontrar un resultado, imprime 0
                 
+                    // Check if fetch was successful
+                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                    if ($result !== false) {
+                        $new_time = $result['updated_at_usuario'];
+                
+                        // If $recorded_time is still equal to $new_time, sleep and increment $time
+                        if ($recorded_time == $new_time) {
+                            sleep(3);
+                            $time = $time + 1;
+                        } else {
+                            // If $recorded_time is different from $new_time, exit the loop
+                            echo 1;
+                            break;
+                        }
+                    } else {
+                        // Handle the case when fetch fails
+                        echo "Fetch failed!";
+                        break;  // Exit the loop or handle accordingly
+                    }
+                }
             } catch (PDOException $e) {
                 echo "Error: " . $e->getMessage();
             }
-        
         }
-    
-}
+    }
